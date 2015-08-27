@@ -76,11 +76,6 @@ Editor::Editor() : QMainWindow(),
     // Initialize the script manager
     ScriptManager = ScriptEngine::SingletonCreate();
     ScriptManager->SingletonInitialize();
-
-    // Open the global script
-    std::string global_script = "data/global.lua";
-    if (!_global_script.OpenFile(global_script))
-        PRINT_ERROR << "failed to load the editor global script: " << global_script << std::endl;
 }
 
 Editor::~Editor()
@@ -101,9 +96,6 @@ Editor::~Editor()
     delete _ed_splitter;
 
     delete _undo_stack;
-
-    // Close the global script.
-    _global_script.CloseFile();
 
     // Do it last since all luabind objects must be freed before closing the lua state.
     ScriptEngine::SingletonDestroy();

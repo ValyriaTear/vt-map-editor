@@ -261,9 +261,6 @@ private:
 
     //! The stack that contains the undo and redo operations.
     QUndoStack *_undo_stack;
-
-    //! The editor global script: Used to run some global function needed there.
-    vt_script::ReadScriptDescriptor _global_script;
 }; // class Editor
 
 
