@@ -1,0 +1,42 @@
+Licenses
+========
+
+Last update: 2015.07.09
+
+This file is listing all the files licenses from the point of the fork
+from the Allacrost project.
+Note: The licensing of the allacrost's files is assumed to be GPLv2 or later,
+as told on the allacrost web site:
+http://www.allacrost.org
+
+'OGA' stands for: Open Game Art - http://opengameart.org
+'dA' stands for: Deviant Art - http://deviantart.com
+'The Mana World' or 'TMW' is referring to: http://themanaworld.org
+
+GPLv2+ or GPLv3+ refer to assets under the standard license with the
+"or any later version" text.  "GPLv2" markings are for assets where it
+is unclear whether the "or any later version" should be present or
+not, and we will mark any content that definitely doesn't have the
+text as "GPLv2-only".  "GPLv2/3" refers to content (from OGA) that
+explicitly lists GPLv2 or v3 but doesn't clarify whether the "or any
+later version" text should be present.
+
+Files                                                                         Licenses                 Authors and details
+----------------------------------------------------------------------------- ------------------------ --------------------------------------------------------------------
+data/*.lua (including subfolders)                                             GPLv2+                   Bertram (unless indicated otherwise)
+
+data/icons/stock-tool-rect-select-22.png                                      GPLv2                    Allacrost
+data/icons/arrow-left.png                                                     GPLv2                    Allacrost
+data/icons/stock-tool-arrow.png                                               GPLv2                    Allacrost
+data/icons/stock-tool-pencil-22.png                                           GPLv2                    Allacrost
+data/icons/stock-tool-color-picker-22.png                                     GPLv2                    Allacrost
+data/icons/arrow-right.png                                                    GPLv2                    Allacrost
+data/icons/stock-tool-eraser-22.png                                           GPLv2                    Allacrost
+data/icons/stock-tool-bucket-fill-22.png                                      GPLv2                    Allacrost
+data/icons/document-new.png                                                   GPLv2+                   Tiled (Bjorn lindeijer - mapeditor.org)
+data/icons/edit-delete.png                                                    GPLv2+                   Tiled (Bjorn lindeijer - mapeditor.org)
+data/icons/eye.png                                                            GPLv2+                   Tiled (Bjorn lindeijer - mapeditor.org)
+data/icons/go-down.png                                                        GPLv2+                   Tiled (Bjorn lindeijer - mapeditor.org)
+data/icons/go-up.png                                                          GPLv2+                   Tiled (Bjorn lindeijer - mapeditor.org)
+
+data/icons/program_icon.ico                                                   GPLv2+                   Bertram (using the scriptina font which is CC0, see DaFont.com)

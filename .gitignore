@@ -47,3 +47,5 @@ doc/SOURCE/html/*
 #map editor
 Map_Editor.layout
 
+# Usual build folder
+build/*
