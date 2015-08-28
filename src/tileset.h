@@ -104,7 +104,7 @@ public:
     *** \return True if the tileset image was loaded successfully
     *** \note A tileset image is required to use this function, but nothing else
     **/
-    virtual bool New(const QString &img_filename, bool one_image = false);
+    virtual bool New(const QString& img_filename, const QString& root_folder, bool one_image = false);
 
     /** \brief Loads the tileset definition file and stores its data in the
     ***        class containers
@@ -115,12 +115,12 @@ public:
     *** \note This function will clear the previously loaded contents when it
     ***       is called
     **/
-    virtual bool Load(const QString &def_filename, bool one_image = false);
+    virtual bool Load(const QString& def_filename, const QString& root_folder, bool one_image = false);
 
     /** \brief Saves the tileset data to its tileset definition file
     *** \return True if the save operation was successful
     **/
-    bool Save();
+    bool Save(const QString& root_folder);
 
     //! \brief Contains the QPixmap tiles of the tileset, used in grid.cpp.
     //! \note The QPixmap class is optimized to show pictures on screen,
@@ -159,10 +159,8 @@ public:
 
     ~TilesetTable();
 
-    //! \note Inherited methods from Tileset class that need to be overridden
-    //@{
-    bool Load(const QString &def_filename);
-    //@}
+    //! \brief Loads a tileset, using the given rootFolder for relative filenames.
+    bool Load(const QString& def_filename, const QString& root_folder);
 
     //! Reference to the table implementation of this tileset
     QTableWidget *table;

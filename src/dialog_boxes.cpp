@@ -27,8 +27,8 @@ namespace vt_editor
 ///////////////////////////////////////////////////////////////////////////////
 
 MapPropertiesDialog::MapPropertiesDialog
-(QWidget *parent, const QString & /*name*/, bool prop)
-    : QDialog(parent)
+(QWidget *parent, const QString& root_folder, bool new_map) :
+    QDialog(parent)
 {
     setWindowTitle("Map Properties...");
 
@@ -57,7 +57,6 @@ MapPropertiesDialog::MapPropertiesDialog
     connect(_cancel_pbut, SIGNAL(released()), this, SLOT(reject()));
 
     // Set up the list of selectable tilesets
-    QDir tileset_dir("data/tilesets");
     _tileset_tree = new QTreeWidget(this);
     _tileset_tree->setColumnCount(1);
     _tileset_tree->setHeaderLabels(QStringList("Tilesets"));
@@ -68,7 +67,8 @@ MapPropertiesDialog::MapPropertiesDialog
     // Loop through all files in the tileset directory. Start the loop at 2 to
     // skip over the present and parent working directories ("." and "..")
     // Also add the data/tilesets path.
-    for(uint32 i = 2; i < tileset_dir.count(); i++) {
+    QDir tileset_dir(root_folder + "/data/tilesets", "*.lua");
+    for(uint32 i = 2; i < tileset_dir.count(); ++i) {
         // Exclude the autotiling.lua file as it's no tileset.
         // TODO: Move files and handle this better...
         if (tileset_dir[i] == QString("autotiling.lua"))
@@ -80,7 +80,7 @@ MapPropertiesDialog::MapPropertiesDialog
         tilesets.back()->setCheckState(0, Qt::Unchecked); // enables checkboxes
 
         // Indicates that the user wants to edit the map's existing properties
-        if(prop) {
+        if(!new_map) {
             // Get a reference to the Editor
             Editor *editor = static_cast<Editor *>(parent);
 
@@ -97,7 +97,7 @@ MapPropertiesDialog::MapPropertiesDialog
     _tileset_tree->insertTopLevelItems(0, tilesets);
 
     // Indicates that the user wants to edit the map's existing properties
-    if(prop) {
+    if(!new_map) {
         // Get a reference to the Editor
         Editor *editor = static_cast<Editor *>(parent);
 
@@ -152,7 +152,7 @@ void MapPropertiesDialog::_EnableOKButton()
 // LayerDialog class -- all functions
 ///////////////////////////////////////////////////////////////////////////////
 
-LayerDialog::LayerDialog(QWidget *parent, const QString & /*name*/)
+LayerDialog::LayerDialog(QWidget *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("Layer properties"));

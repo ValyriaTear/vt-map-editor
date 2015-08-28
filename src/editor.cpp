@@ -33,7 +33,8 @@ namespace vt_editor
 // Editor class -- public functions
 ///////////////////////////////////////////////////////////////////////////////
 
-Editor::Editor() : QMainWindow(),
+Editor::Editor() :
+    QMainWindow(),
     _layer_up_button(0),
     _layer_down_button(0),
     _delete_layer_button(0)
@@ -290,7 +291,12 @@ void Editor::_FileNew()
         return;
     }
 
-    MapPropertiesDialog *new_map = new MapPropertiesDialog(this, "new_map", false);
+    if (_game_data_folder_path.isEmpty()) {
+        QMessageBox::information(this, tr("Map Editor"), tr("Please set the game data/ folder first!"));
+        return;
+    }
+
+    MapPropertiesDialog *new_map = new MapPropertiesDialog(this, _game_data_folder_path.split("data").at(0), true);
 
     if(new_map->exec() != QDialog::Accepted) {
         statusBar()->showMessage(tr("No map created!"), 5000);
@@ -331,13 +337,13 @@ void Editor::_FileNew()
         if(tilesets->topLevelItem(i)->checkState(0) == Qt::Checked) {
             new_map_progress->setValue(checked_items++);
 
-            TilesetTable *a_tileset = new TilesetTable();
-            if(!a_tileset->Load(tilesets->topLevelItem(i)->text(0))) {
-                const std::string mes = "Failed to load tileset image: "
-                                        + tilesets->topLevelItem(i)->text(0).toStdString();
+            TilesetTable* a_tileset = new TilesetTable();
+            if(!a_tileset->Load(tilesets->topLevelItem(i)->text(0),
+                                _game_data_folder_path.split("data").at(0))) {
+                QString tileset_full_path = _game_data_folder_path.split("data").at(0) + tilesets->topLevelItem(i)->text(0);
                 QMessageBox::critical(this, tr("Map Editor"),
-                                        tr(mes.c_str()));
-                statusBar()->showMessage(tr("Couldn't load map! Invalid tileset given"), 5000);
+                                      tr("Failed to load tileset image in: %1").arg(tileset_full_path));
+                statusBar()->showMessage(tr("Couldn't create new map! Invalid tileset given"), 5000);
 
                 // Hide and delete progress bar
                 new_map_progress->hide();
@@ -433,16 +439,21 @@ void Editor::_FileNew()
 void Editor::_FileOpen()
 {
     if(!_EraseOK()) {
-        statusBar()->showMessage(tr("No map created! Unsaved data is still existing."), 5000);
+        statusBar()->showMessage(tr("Can't open a new file! Unsaved data is still existing."), 5000);
+        return;
+    }
+
+    if (_game_data_folder_path.isEmpty()) {
+        QMessageBox::information(this, tr("Map Editor"), tr("Please set the game data/ folder first!"));
         return;
     }
 
     // file to open
     QString file_name = QFileDialog::getOpenFileName(this, tr("Map Editor -- File Open"),
-                        "data", "Maps (*.lua)");
+                        _game_data_folder_path, "Maps (*.lua)");
 
     if(file_name.isEmpty()) {
-        statusBar()->showMessage(tr("No map created! Empty filename given."), 5000);
+        statusBar()->showMessage(tr("No map open! Empty filename given."), 5000);
         return;
     }
 
@@ -480,11 +491,10 @@ void Editor::_FileOpen()
         new_map_progress->setValue(progress_steps++);
 
         TilesetTable *a_tileset = new TilesetTable();
-        if(!a_tileset->Load(*it)) {
-            const std::string mes = tr("Failed to load tileset image: ").toStdString()
-                                    + (*it).toStdString();
+        if(!a_tileset->Load(*it, _game_data_folder_path.split("data").at(0))) {
+            QString tileset_full_path = _game_data_folder_path.split("data").at(0) + (*it);
             QMessageBox::critical(this, tr("Map Editor"),
-                                    tr(mes.c_str()));
+                                  tr("Failed to load tileset image: %1").arg(tileset_full_path));
             statusBar()->showMessage(tr("Couldn't load map! Invalid tileset given"), 5000);
 
             // Hide and delete progress bar
@@ -540,7 +550,9 @@ void Editor::_FileSaveAs()
 {
     // get the file name from the user
     QString file_name = QFileDialog::getSaveFileName(this,
-                        tr("Map Editor -- File Save"), "data", "Maps (*.lua)");
+                                                     tr("Map Editor -- File Save"),
+                                                     _game_data_folder_path,
+                                                     "Maps (*.lua)");
 
     if(file_name.isEmpty()) {
         statusBar()->showMessage("Save abandoned.", 5000);
@@ -569,7 +581,20 @@ void Editor::_FileSave()
                              arg(_grid->GetFileName()), 5000);
 }
 
+void Editor::_FileSetGameFolder()
+{
+    QString file_path = QFileDialog::getExistingDirectory(this,
+                                                         tr("Map Editor -- Set Game data/ folder"),
+                                                         _game_data_folder_path);
 
+    if(file_path.isEmpty()) {
+        statusBar()->showMessage(tr("Game data/ path not set"), 5000);
+        return;
+    }
+    statusBar()->showMessage(tr("Game data/ path set to: %1").arg(file_path), 5000);
+    _game_data_folder_path = file_path;
+    // TODO: Set this in the settings.
+}
 
 void Editor::_FileClose()
 {
@@ -766,7 +791,7 @@ void Editor::_TileModeDelete()
 
 void Editor::_TilesetEdit()
 {
-    TilesetEditor *tileset_editor = new TilesetEditor(this);
+    TilesetEditor *tileset_editor = new TilesetEditor(this, _game_data_folder_path.split("data").at(0));
 
     tileset_editor->exec();
 
@@ -779,7 +804,7 @@ void Editor::_MapAddLayer()
     if(!_grid)
         return;
 
-    LayerDialog *layer_dlg = new LayerDialog(this, "layer_dialog");
+    LayerDialog *layer_dlg = new LayerDialog(this);
 
     if(layer_dlg->exec() == QDialog::Accepted) {
         // Apply changes
@@ -932,175 +957,186 @@ void Editor::_MapMoveLayerDown()
 
 void Editor::_MapProperties()
 {
-    MapPropertiesDialog *props = new MapPropertiesDialog(this, "map_properties", true);
+    MapPropertiesDialog *props = new MapPropertiesDialog(this, _game_data_folder_path.split("data").at(0), false);
 
-    if(props->exec() == QDialog::Accepted) {
-        /*
-        #if !defined(WIN32)
-        if (_ed_scrollarea->_map->GetWidth() < props->GetWidth())
-        {
-        	// User wants to make map wider so we must insert columns of tiles at the edge of the map.
-
-        	int map_width     = _ed_scrollarea->_map->GetWidth();
-        	int map_height    = _ed_scrollarea->_map->GetHeight();
-        	int extra_columns = props->GetWidth() - map_width;
-
-        	// Add in the extra columns one by one.
-        	for (int col = extra_columns; col > 0; col--)
-        	{
-        		vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        		vector<int32>::iterator it = lower_layer.begin() + map_width;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			lower_layer.insert(it, -1);
-        			it += map_width + 1;
-        		} // iterate through the rows of the lower layer
-
-        		vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        		it = middle_layer.begin() + map_width;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			middle_layer.insert(it, -1);
-        			it += map_width + 1;
-        		} // iterate through the rows of the middle layer
-
-        		vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
-        		it = upper_layer.begin() + map_width;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			upper_layer.insert(it, -1);
-        			it += map_width + 1;
-        		} // iterate through the rows of the upper layer
-
-        		map_width++;
-        		_ed_scrollarea->_map->SetWidth(map_width);
-        	} // add in all the extra columns
-        } // insert columns
-        else if (_ed_scrollarea->_map->GetWidth() > props->GetWidth())
-        {
-        	// User wants to make map less wide so we must delete columns of tiles from the edge of the map.
-
-        	int map_width     = _ed_scrollarea->_map->GetWidth();
-        	int map_height    = _ed_scrollarea->_map->GetHeight();
-        	int extra_columns = map_width - props->GetWidth();
-
-        	// Delete all the extra columns one by one.
-        	for (int col = extra_columns; col > 0; col--)
-        	{
-        		vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        		vector<int32>::iterator it = lower_layer.begin() + map_width - 1;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			lower_layer.erase(it);
-        			it += map_width - 1;
-        		} // iterate through the rows of the lower layer
-
-        		vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        		it = middle_layer.begin() + map_width - 1;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			middle_layer.erase(it);
-        			it += map_width - 1;
-        		} // iterate through the rows of the middle layer
-
-        		vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
-        		it = upper_layer.begin() + map_width - 1;
-        		for (int row = 0; row < map_height; row++)
-        		{
-        			upper_layer.erase(it);
-        			it += map_width - 1;
-        		} // iterate through the rows of the upper layer
-
-        		map_width--;
-        		_ed_scrollarea->_map->SetWidth(map_width);
-        	} // delete all the extra columns
-        } // delete columns
-
-        if (_ed_scrollarea->_map->GetHeight() < props->GetHeight())
-        {
-        	// User wants to make map taller so we must insert rows of tiles at the edge of the map.
-
-        	int map_width = _ed_scrollarea->_map->GetWidth();
-        	int extra_rows = props->GetHeight() - _ed_scrollarea->_map->GetHeight();
-
-        	vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        	vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        	vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
-        	lower_layer.insert( lower_layer.end(),  extra_rows * map_width, -1);
-        	middle_layer.insert(middle_layer.end(), extra_rows * map_width, -1);
-        	upper_layer.insert( upper_layer.end(),  extra_rows * map_width, -1);
-        } // add rows
-        else if (_ed_scrollarea->_map->GetHeight() > props->GetHeight())
-        {
-        	// User wants to make map less tall so we must delete rows of tiles from the edge of the map.
-
-        	int map_width  = _ed_scrollarea->_map->GetWidth();
-        	int extra_rows = _ed_scrollarea->_map->GetHeight() - props->GetHeight();
-
-        	vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        	vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        	vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
-        	lower_layer.erase( lower_layer.end()  - extra_rows * map_width, lower_layer.end());
-        	middle_layer.erase(middle_layer.end() - extra_rows * map_width, middle_layer.end());
-        	upper_layer.erase( upper_layer.end()  - extra_rows * map_width, upper_layer.end());
-        } // delete rows
-
-        // Resize the map, QOpenGL and QScrollView widgets.
-        _ed_scrollarea->_map->SetHeight(props->GetHeight());
-        _ed_scrollarea->_map->resize(props->GetWidth() * TILE_WIDTH, props->GetHeight() * TILE_HEIGHT);
-        _ed_scrollarea->resize(props->GetWidth() * TILE_WIDTH, props->GetHeight() * TILE_HEIGHT);
-        #endif
-
-
-        */
-        // User has the ability to add or remove tilesets being used. We don't want
-        // to reload tilesets that have already been loaded before.
-
-        QTreeWidget *tilesets = props->GetTilesetTree();
-
-        // Put the names of the tabs into a nice list that can be easily searched
-        // with one command instead of a loop.
-        QStringList tab_names;
-        for(int i = 0; i < _ed_tabs->count(); i++)
-            tab_names << _ed_tabs->tabText(i);
-
-        // Go through the list of tilesets, adding selected tilesets and removing
-        // any unwanted tilesets.
-        int num_items = tilesets->topLevelItemCount();
-        for(int i = 0; i < num_items; i++) {
-            if(tilesets->topLevelItem(i)->checkState(0) == Qt::Checked) {
-                if(tab_names.contains(tilesets->topLevelItem(i)->text(0)) == false) {
-                    TilesetTable *a_tileset = new TilesetTable();
-                    a_tileset->Load(tilesets->topLevelItem(i)->text(0));
-                    _ed_tabs->addTab(a_tileset->table, tilesets->topLevelItem(i)->text(0));
-                    _grid->tilesets.push_back(a_tileset);
-                } // only add a tileset if it isn't already loaded
-            } // tileset must be checked in order to add it
-            else if(tilesets->topLevelItem(i)->checkState(0) == Qt::Unchecked &&
-                    tab_names.contains(tilesets->topLevelItem(i)->text(0)))
-                _ed_tabs->removeTab(tab_names.indexOf(tilesets->topLevelItem(i)->text(0)));
-            // FIXME:
-            // Where to add and remove tileset name from the tilesets list
-            // in the _map? Do it here or when actually painting and deleting
-            // tiles? Here the assumption is made that if the user is adding a
-            // tileset, then s/he expects to use tiles from that tileset and we
-            // can safely add the tileset name to the _map. Otherwise we would
-            // have to constantly check every time a paint operation occurs
-            // whether or not the tileset name of the selected tile was present
-            // in the tileset name list in _map. That's cumbersome.
-            //
-            // When removing a tileset however, there might still be tiles in
-            // the map from that tileset, and the user is only removing the
-            // tileset from the view in the bottom of the map to unclutter
-            // things. In this case we wouldn't want to remove the tileset name
-            // from the list in _map.
-        } // iterate through all possible tilesets
-    } // only if the user pressed OK
-    else
+    if(props->exec() != QDialog::Accepted) {
         statusBar()->showMessage("Properties not modified!", 5000);
+        delete props;
+        return;
+    }
+    /*
+    #if !defined(WIN32)
+    if (_ed_scrollarea->_map->GetWidth() < props->GetWidth())
+    {
+        // User wants to make map wider so we must insert columns of tiles at the edge of the map.
+
+        int map_width     = _ed_scrollarea->_map->GetWidth();
+        int map_height    = _ed_scrollarea->_map->GetHeight();
+        int extra_columns = props->GetWidth() - map_width;
+
+        // Add in the extra columns one by one.
+        for (int col = extra_columns; col > 0; col--)
+        {
+            vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32>::iterator it = lower_layer.begin() + map_width;
+            for (int row = 0; row < map_height; row++)
+            {
+                lower_layer.insert(it, -1);
+                it += map_width + 1;
+            } // iterate through the rows of the lower layer
+
+            vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+            it = middle_layer.begin() + map_width;
+            for (int row = 0; row < map_height; row++)
+            {
+                middle_layer.insert(it, -1);
+                it += map_width + 1;
+            } // iterate through the rows of the middle layer
+
+            vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+            it = upper_layer.begin() + map_width;
+            for (int row = 0; row < map_height; row++)
+            {
+                upper_layer.insert(it, -1);
+                it += map_width + 1;
+            } // iterate through the rows of the upper layer
+
+            map_width++;
+            _ed_scrollarea->_map->SetWidth(map_width);
+        } // add in all the extra columns
+    } // insert columns
+    else if (_ed_scrollarea->_map->GetWidth() > props->GetWidth())
+    {
+        // User wants to make map less wide so we must delete columns of tiles from the edge of the map.
+
+        int map_width     = _ed_scrollarea->_map->GetWidth();
+        int map_height    = _ed_scrollarea->_map->GetHeight();
+        int extra_columns = map_width - props->GetWidth();
+
+        // Delete all the extra columns one by one.
+        for (int col = extra_columns; col > 0; col--)
+        {
+            vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32>::iterator it = lower_layer.begin() + map_width - 1;
+            for (int row = 0; row < map_height; row++)
+            {
+                lower_layer.erase(it);
+                it += map_width - 1;
+            } // iterate through the rows of the lower layer
+
+            vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+            it = middle_layer.begin() + map_width - 1;
+            for (int row = 0; row < map_height; row++)
+            {
+                middle_layer.erase(it);
+                it += map_width - 1;
+            } // iterate through the rows of the middle layer
+
+            vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+            it = upper_layer.begin() + map_width - 1;
+            for (int row = 0; row < map_height; row++)
+            {
+                upper_layer.erase(it);
+                it += map_width - 1;
+            } // iterate through the rows of the upper layer
+
+            map_width--;
+            _ed_scrollarea->_map->SetWidth(map_width);
+        } // delete all the extra columns
+    } // delete columns
+
+    if (_ed_scrollarea->_map->GetHeight() < props->GetHeight())
+    {
+        // User wants to make map taller so we must insert rows of tiles at the edge of the map.
+
+        int map_width = _ed_scrollarea->_map->GetWidth();
+        int extra_rows = props->GetHeight() - _ed_scrollarea->_map->GetHeight();
+
+        vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+        lower_layer.insert( lower_layer.end(),  extra_rows * map_width, -1);
+        middle_layer.insert(middle_layer.end(), extra_rows * map_width, -1);
+        upper_layer.insert( upper_layer.end(),  extra_rows * map_width, -1);
+    } // add rows
+    else if (_ed_scrollarea->_map->GetHeight() > props->GetHeight())
+    {
+        // User wants to make map less tall so we must delete rows of tiles from the edge of the map.
+
+        int map_width  = _ed_scrollarea->_map->GetWidth();
+        int extra_rows = _ed_scrollarea->_map->GetHeight() - props->GetHeight();
+
+        vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+        lower_layer.erase( lower_layer.end()  - extra_rows * map_width, lower_layer.end());
+        middle_layer.erase(middle_layer.end() - extra_rows * map_width, middle_layer.end());
+        upper_layer.erase( upper_layer.end()  - extra_rows * map_width, upper_layer.end());
+    } // delete rows
+
+    // Resize the map, QOpenGL and QScrollView widgets.
+    _ed_scrollarea->_map->SetHeight(props->GetHeight());
+    _ed_scrollarea->_map->resize(props->GetWidth() * TILE_WIDTH, props->GetHeight() * TILE_HEIGHT);
+    _ed_scrollarea->resize(props->GetWidth() * TILE_WIDTH, props->GetHeight() * TILE_HEIGHT);
+    #endif
+
+
+    */
+    // User has the ability to add or remove tilesets being used. We don't want
+    // to reload tilesets that have already been loaded before.
+
+    QTreeWidget *tilesets = props->GetTilesetTree();
+
+    // Put the names of the tabs into a nice list that can be easily searched
+    // with one command instead of a loop.
+    QStringList tab_names;
+    for(int i = 0; i < _ed_tabs->count(); i++)
+        tab_names << _ed_tabs->tabText(i);
+
+    // Go through the list of tilesets, adding selected tilesets and removing
+    // any unwanted tilesets.
+    int num_items = tilesets->topLevelItemCount();
+    for(int i = 0; i < num_items; i++) {
+        // Tileset must be checked in order to add it
+        if(tilesets->topLevelItem(i)->checkState(0) == Qt::Checked) {
+            // Only add a tileset if it isn't already loaded
+            if(tab_names.contains(tilesets->topLevelItem(i)->text(0)) == true)
+                continue;
+
+            TilesetTable *a_tileset = new TilesetTable();
+            QString tileset_full_path = _game_data_folder_path.split("data").at(0) + tilesets->topLevelItem(i)->text(0);
+            if (!a_tileset->Load(tilesets->topLevelItem(i)->text(0),
+                            _game_data_folder_path.split("data").at(0))) {
+                QMessageBox::critical(this, tr("Error on tilesets!"),
+                                        tr("Error while loading: %1")
+                                        .arg(tileset_full_path));
+                continue;
+            }
+            _ed_tabs->addTab(a_tileset->table, tilesets->topLevelItem(i)->text(0));
+            _grid->tilesets.push_back(a_tileset);
+        }
+        else if(tilesets->topLevelItem(i)->checkState(0) == Qt::Unchecked &&
+                tab_names.contains(tilesets->topLevelItem(i)->text(0)))
+            _ed_tabs->removeTab(tab_names.indexOf(tilesets->topLevelItem(i)->text(0)));
+        // FIXME:
+        // Where to add and remove tileset name from the tilesets list
+        // in the _map? Do it here or when actually painting and deleting
+        // tiles? Here the assumption is made that if the user is adding a
+        // tileset, then s/he expects to use tiles from that tileset and we
+        // can safely add the tileset name to the _map. Otherwise we would
+        // have to constantly check every time a paint operation occurs
+        // whether or not the tileset name of the selected tile was present
+        // in the tileset name list in _map. That's cumbersome.
+        //
+        // When removing a tileset however, there might still be tiles in
+        // the map from that tileset, and the user is only removing the
+        // tileset from the view in the bottom of the map to unclutter
+        // things. In this case we wouldn't want to remove the tileset name
+        // from the list in _map.
+    }
 
     delete props;
-} // void Editor::_MapProperties()
+}
 
 
 void Editor::_UpdateLayersView()
@@ -1265,6 +1301,11 @@ void Editor::_CreateActions()
     _save_action->setStatusTip("Save the map");
     connect(_save_action, SIGNAL(triggered()), this, SLOT(_FileSave()));
 
+    _set_game_folder_action = new QAction("Set &Game data/ Folder...", this);
+    _set_game_folder_action->setShortcut(tr("Ctrl+H"));
+    _set_game_folder_action->setStatusTip("Set the main game data/ folder. Used to be able to load tilesets, ...");
+    connect(_set_game_folder_action, SIGNAL(triggered()), this, SLOT(_FileSetGameFolder()));
+
     _close_action = new QAction("&Close", this);
     _close_action->setShortcut(tr("Ctrl+W"));
     _close_action->setStatusTip("Close the map");
@@ -1372,6 +1413,8 @@ void Editor::_CreateMenus()
     _file_menu->addSeparator();
     _file_menu->addAction(_save_action);
     _file_menu->addAction(_save_as_action);
+    _file_menu->addSeparator();
+    _file_menu->addAction(_set_game_folder_action);
     _file_menu->addSeparator();
     _file_menu->addAction(_close_action);
     _file_menu->addAction(_quit_action);

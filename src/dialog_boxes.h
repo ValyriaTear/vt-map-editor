@@ -51,10 +51,10 @@ class MapPropertiesDialog: public QDialog
     friend class EditorScrollArea;
 
 public:
-    /** \param parent The widget from which this dialog was invoked.
-    *** \param name The name of this widget.
-    *** \param prop True when accessing an already loaded map's properties,
-    ***             false otherwise.
+    /** \param parent      The widget from which this dialog was invoked.
+    *** \param root_folder The game root folder.
+    *** \param new_map     False when accessing an already loaded map's properties,
+    ***                    true otherwise.
     ***
     *** This class is used in two instances. For presenting a dialog to the
     *** user to (1) create a new map or (2) modify the properties of an already
@@ -62,7 +62,7 @@ public:
     *** portion of the editor). For case #1, the parameter prop is false, and
     *** for case #2, it is true.
     **/
-    MapPropertiesDialog(QWidget *parent, const QString &name, bool prop);
+    MapPropertiesDialog(QWidget *parent, const QString& root_folder, bool newMap);
 
     ~MapPropertiesDialog();
 
@@ -126,9 +126,8 @@ class LayerDialog: public QDialog
 
 public:
     /** \param parent The widget from which this dialog was invoked.
-    *** \param name The name of this widget.
     **/
-    LayerDialog(QWidget *parent, const QString &name);
+    LayerDialog(QWidget *parent);
 
     ~LayerDialog();
 

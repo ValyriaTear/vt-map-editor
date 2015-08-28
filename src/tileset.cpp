@@ -57,10 +57,9 @@ QString Tileset::CreateTilesetName(const QString &filename)
     // Chop off the appended four characters (the filename extension)
     tname.chop(4);
     return tname;
-} // Tileset::CreateTilesetName(...)
+}
 
-
-bool Tileset::New(const QString &img_filename, bool one_image)
+bool Tileset::New(const QString &img_filename, const QString& root_folder, bool one_image)
 {
     if (img_filename.isEmpty())
         return false;
@@ -88,9 +87,10 @@ bool Tileset::New(const QString &img_filename, bool one_image)
 
     QRect rectangle;
     QImage entire_tileset;
-    if (!entire_tileset.load(_tileset_image_filename, "png")) {
+    QString tileset_full_path = root_folder + _tileset_image_filename;
+    if (!entire_tileset.load(tileset_full_path, "png")) {
         qDebug("Failed to load tileset image: %s",
-                _tileset_image_filename.toStdString().c_str());
+                tileset_full_path.toStdString().c_str());
         return false;
     }
 
@@ -129,7 +129,7 @@ bool Tileset::New(const QString &img_filename, bool one_image)
 } // Tileset::New(...)
 
 
-bool Tileset::Load(const QString &def_filename, bool one_image)
+bool Tileset::Load(const QString &def_filename, const QString& root_folder, bool one_image)
 {
     if (def_filename.isEmpty())
         return false;
@@ -147,7 +147,7 @@ bool Tileset::Load(const QString &def_filename, bool one_image)
 
     // Set up for reading the tileset definition file.
     ReadScriptDescriptor read_data;
-    if(!read_data.OpenFile(def_filename.toStdString())) {
+    if(!read_data.OpenFile(root_folder.toStdString() + def_filename.toStdString())) {
         _initialized = false;
         return false;
     }
@@ -166,9 +166,10 @@ bool Tileset::Load(const QString &def_filename, bool one_image)
 
     QRect rectangle;
     QImage entire_tileset;
-    if (!entire_tileset.load(_tileset_image_filename, "png")) {
+    QString tileset_full_path = root_folder + _tileset_image_filename;
+    if (!entire_tileset.load(tileset_full_path, "png")) {
         qDebug("Failed to load tileset image: %s",
-                _tileset_image_filename.toStdString().c_str());
+                tileset_full_path.toStdString().c_str());
         return false;
     }
 
@@ -264,11 +265,11 @@ bool Tileset::Load(const QString &def_filename, bool one_image)
 } // Tileset::Load(...)
 
 
-bool Tileset::Save()
+bool Tileset::Save(const QString& root_folder)
 {
     WriteScriptDescriptor write_data;
 
-    if (!write_data.OpenFile(_tileset_definition_filename.toStdString()))
+    if (!write_data.OpenFile(QString(root_folder + _tileset_definition_filename).toStdString()))
         return false;
 
     // Write the main table for the tileset file
@@ -368,30 +369,15 @@ TilesetTable::~TilesetTable()
 } // TilesetTable destructor
 
 
-bool TilesetTable::Load(const QString &def_filename)
+bool TilesetTable::Load(const QString &def_filename, const QString& root_folder)
 {
-    if (!Tileset::Load(def_filename))
+    if (!Tileset::Load(def_filename, root_folder))
         return false;
 
     // Read in tiles and create table items.
-    // Historical note:
-    // This was one ugly hack. It loads each individual tile's image and
-    // puts it into a table. But each tile's image only exists together with a
-    // bunch of other tiles in a tileset image. So we have to split them up.
-    // Qt has no built-in function to split a big image into little ones (as
-    // of Qt 4.4). This image information has already been loaded by the above
-    // call to Tileset::Load(...). If we could somehow take that info and put
-    // it into a Qt table, that would be ideal.
-    //
-    // This piece of code is what takes so long for the editor to load one
-    // tileset.
-    //
-    // <<FIXED>>: The ugly hack has been fixed, I use the QImage to handle
-    // directly to the bits, it's much faster. Contact me if there's any
-    // problem with this fix, eguitarz (dalema22@gmail.com)
     QRect rectangle;
     QImage entire_tileset;
-    entire_tileset.load(_tileset_image_filename, "png");
+    entire_tileset.load(root_folder + _tileset_image_filename, "png");
     for(uint32 row = 0; row < num_rows; ++row) {
         for(uint32 col = 0; col < num_cols; ++col) {
             rectangle.setRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH,
@@ -413,6 +399,6 @@ bool TilesetTable::Load(const QString &def_filename)
     table->setCurrentCell(0, 0);
 
     return true;
-} // TilesetTable::Load(...)
+}
 
 } // namespace vt_editor

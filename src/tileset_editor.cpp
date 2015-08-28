@@ -211,8 +211,9 @@ bool TilesetDisplay::_GetTileCollisionValue(QGraphicsSceneMouseEvent *evt)
 ////////// TilesetEditor class
 ////////////////////////////////////////////////////////////////////////////////
 
-TilesetEditor::TilesetEditor(QWidget *parent)
-    : QDialog(parent)
+TilesetEditor::TilesetEditor(QWidget *parent, const QString& root_folder) :
+    QDialog(parent),
+    _root_folder(root_folder)
 {
     setWindowTitle(tr("Tileset Editor"));
 
@@ -220,6 +221,7 @@ TilesetEditor::TilesetEditor(QWidget *parent)
     _new_pbut = new QPushButton(tr("New"), this);
     _open_pbut = new QPushButton(tr("Open"), this);
     _save_pbut = new QPushButton(tr("Save"), this);
+    _save_pbut->setDisabled(true);
     _exit_pbut = new QPushButton(tr("Exit"), this);
     _exit_pbut->setDefault(true);
 
@@ -245,8 +247,6 @@ TilesetEditor::TilesetEditor(QWidget *parent)
     _dia_layout->addWidget(_tset_display->graphic_view, 0, 0, 3, 1);
 }
 
-
-
 TilesetEditor::~TilesetEditor()
 {
     delete _new_pbut;
@@ -257,18 +257,24 @@ TilesetEditor::~TilesetEditor()
     delete _tset_display;
 }
 
-
-
 void TilesetEditor::_NewFile()
 {
+    if (_root_folder.isEmpty()) {
+        QMessageBox::information(this, tr("Map Editor"), tr("Please set the game data/ folder first!"));
+        return;
+    }
+
     // Get the filename to open through the OpenFileName dialog
     QString filename = QFileDialog::getOpenFileName(this, "Map Editor -- File Open",
-                       "data/tilesets", "Tileset Images (*.png)");
+                       _root_folder + "/data/tilesets", "Tileset Images (*.png)");
 
     if (filename.isEmpty())
         return;
 
-    if (!_tset_display->tileset->New(filename, true)) {
+    // Remove the root folder from the file name
+    QStringList file_parts = filename.split(_root_folder);
+    QString relativeName = file_parts.count() > 1 ? file_parts.at(1) : filename;
+    if (!_tset_display->tileset->New(relativeName, _root_folder, true)) {
         QMessageBox::warning(this, tr("Map Editor"),
                                 tr("Failed to create new tileset."));
     }
@@ -278,36 +284,53 @@ void TilesetEditor::_NewFile()
 
     // Refreshes the scene
     _tset_display->UpdateScene();
+
+    _save_pbut->setEnabled(true);
 }
 
 
 
 void TilesetEditor::_OpenFile()
 {
+    if (_root_folder.isEmpty()) {
+        QMessageBox::information(this, tr("Map Editor"), tr("Please set the game data/ folder first!"));
+        return;
+    }
+
     // Get the filename to open through the OpenFileName dialog
     QString file_name = QFileDialog::getOpenFileName(this, "Map Editor -- File Open",
-                        "data/tilesets", "Tilesets (*.lua)");
+                        _root_folder + "/data/tilesets", "Tilesets (*.lua)");
 
     if (file_name.isEmpty())
         return;
 
-    if (!_tset_display->tileset->Load(file_name, true)) {
+    // Remove the root folder from the file name
+    QStringList file_parts = file_name.split(_root_folder);
+    QString relativeName = file_parts.count() > 1 ? file_parts.at(1) : file_name;
+    if (!_tset_display->tileset->Load(relativeName, _root_folder, true)) {
         QMessageBox::warning(this, tr("Map Editor"),
                                 tr("Failed to load existing tileset."));
     }
 
     // Refreshes the scene
     _tset_display->UpdateScene();
+
+    _save_pbut->setEnabled(true);
 }
 
 
 void TilesetEditor::_SaveFile()
 {
+    Tileset* tileset = _tset_display->tileset;
     // Data must exist in order to save it
-    if(_tset_display->tileset->IsInitialized())
-        if(_tset_display->tileset->Save() == false)
-            QMessageBox::warning(this, tr("Map Editor"),
-                                 tr("Failed to save data to tileset definition file."));
+    if(!tileset->IsInitialized())
+        return;
+
+    if(!tileset->Save(_root_folder)) {
+        QMessageBox::warning(this, tr("Map Editor"),
+                             tr("Failed to save data to tileset definition file in: %1")
+                                .arg(_root_folder + tileset->GetDefintionFilename()));
+    }
 }
 
 } // namespace vt_editor

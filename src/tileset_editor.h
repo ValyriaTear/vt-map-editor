@@ -116,7 +116,7 @@ public:
     //! \brief A constructor for the TilesetEditor class.This class is used to modify the tileset
     //! \definition files through an interface.
     //! \param parent The widget from which this dialog was invoked.
-    TilesetEditor(QWidget *parent);
+    TilesetEditor(QWidget *parent, const QString& root_folder);
     ~TilesetEditor();
 
 private slots:
@@ -147,6 +147,10 @@ private:
 
     //! \brief The tileset display, also containing the tileset data itself
     TilesetDisplay *_tset_display;
+
+    //! \brief The game root folder
+    QString _root_folder;
+
 }; // class TilesetEditor : public QDialog
 
 } // namespace vt_editor

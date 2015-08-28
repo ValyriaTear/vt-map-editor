@@ -93,6 +93,7 @@ private slots:
     void _FileOpen();
     void _FileSaveAs();
     void _FileSave();
+    void _FileSetGameFolder();
     void _FileClose();
     void _FileQuit();
     //@}
@@ -170,8 +171,6 @@ private:
     // Clears and refill the layer view with the current layers found in the base context.
     void _UpdateLayersView();
 
-    bool _update_view_on_layer_change;
-
     //! \brief Used to determine if it is safe to erase the current map.
     //!        Will prompt the user for action: to save or not to save.
     //! \return True if user decided to save the map or intentionally erase it;
@@ -200,12 +199,13 @@ private:
     //! \brief These are Qt's way of associating the same back-end functionality to occur whether a user
     //!        invokes a menu through the menu bar, a keyboard shortcut, a toolbar button, or other means.
     //{@
-    QAction *_new_action;
-    QAction *_open_action;
-    QAction *_save_as_action;
-    QAction *_save_action;
-    QAction *_close_action;
-    QAction *_quit_action;
+    QAction* _new_action;
+    QAction* _open_action;
+    QAction* _save_as_action;
+    QAction* _save_action;
+    QAction* _set_game_folder_action;
+    QAction* _close_action;
+    QAction* _quit_action;
 
     QAction *_toggle_grid_action;
 
@@ -235,29 +235,32 @@ private:
 
     QTreeWidget *_ed_layer_view;
 
-    // The map data handling and custom QGraphicsScene class
+    //! \brief The map data handling and custom QGraphicsScene class
     Grid *_grid;
 
-    // Used to add / modify / remove layers.
+    //! \brief Used to add / modify / remove layers.
     QToolBar *_ed_layer_toolbar;
 
-    //! The layer up/down buttons reference. Used to set their enabled state depending on the selected layer.
+    //! \brief The layer up/down buttons reference. Used to set their enabled state depending on the selected layer.
     // Created and deleted by the layer view toolbar. Don't delete it.
     QPushButton *_layer_up_button;
     QPushButton *_layer_down_button;
-    //! Delete layer button reference to prevent being able to delete the last ground layer
+    //! \brief Delete layer button reference to prevent being able to delete the last ground layer
     QPushButton *_delete_layer_button;
 
-    //! Used as the main widget in the editor since it enables user-sizable sub-widgets.
+    //! \brief Used as the main widget in the editor since it enables user-sizable sub-widgets.
     QSplitter *_ed_splitter;
 
     QSplitter *_ed_tileset_layer_splitter;
 
-    //! Grid toggle view switch.
+    //! \brief Grid toggle view switch.
     bool _grid_on;
 
-    //! Selection rectangle toggle view switch.
+    //! \brief Selection rectangle toggle view switch.
     bool _select_on;
+
+    //! \brief the Game data/ folder, used to correctly set up tilesets, open more quickly maps, ...
+    QString _game_data_folder_path;
 
     //! The stack that contains the undo and redo operations.
     QUndoStack *_undo_stack;
