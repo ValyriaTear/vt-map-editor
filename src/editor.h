@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 #include <QProgressDialog>
 #include <QScrollArea>
+#include <QSettings>
 #include <QSplitter>
 #include <QSpinBox>
 #include <QStatusBar>
@@ -262,8 +263,11 @@ private:
     //! \brief the Game data/ folder, used to correctly set up tilesets, open more quickly maps, ...
     QString _game_data_folder_path;
 
-    //! The stack that contains the undo and redo operations.
-    QUndoStack *_undo_stack;
+    //! \brief The settings
+    QSettings* _settings;
+
+    //! \brief The stack that contains the undo and redo operations.
+    QUndoStack* _undo_stack;
 }; // class Editor
 
 

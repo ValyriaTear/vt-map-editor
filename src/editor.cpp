@@ -42,6 +42,10 @@ Editor::Editor() :
     // create the undo stack
     _undo_stack = new QUndoStack();
 
+    // Load settings
+    _settings = new QSettings("ValyriaTear", "VT-Editor");
+    _game_data_folder_path = _settings->value("GameDataPath").toString();
+
     // set scollview to nullptr because it's being checked inside _TilesEnableActions
     _grid = nullptr;
 
@@ -97,6 +101,7 @@ Editor::~Editor()
     delete _ed_splitter;
 
     delete _undo_stack;
+    delete _settings;
 
     // Do it last since all luabind objects must be freed before closing the lua state.
     ScriptEngine::SingletonDestroy();
@@ -593,7 +598,8 @@ void Editor::_FileSetGameFolder()
     }
     statusBar()->showMessage(tr("Game data/ path set to: %1").arg(file_path), 5000);
     _game_data_folder_path = file_path;
-    // TODO: Set this in the settings.
+    // Set this in the settings.
+    _settings->setValue("GameDataPath", _game_data_folder_path);
 }
 
 void Editor::_FileClose()
