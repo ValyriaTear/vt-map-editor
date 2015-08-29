@@ -46,6 +46,11 @@ Editor::Editor() :
     _settings = new QSettings("ValyriaTear", "VT-Editor");
     _game_data_folder_path = _settings->value("GameDataPath").toString();
 
+    // Test the current game data existence and empty it if not valid anymore.
+    QDir dataDir(_game_data_folder_path);
+    if (!dataDir.exists())
+        _game_data_folder_path.clear();
+
     // set scollview to nullptr because it's being checked inside _TilesEnableActions
     _grid = nullptr;
 
