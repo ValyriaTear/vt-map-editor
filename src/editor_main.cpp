@@ -30,34 +30,6 @@ using namespace vt_editor;
 
 int main(int argc, char **argv)
 {
-#ifndef _WIN32
-#ifndef __MACH__
-    // Look for data files in DATADIR only if they are not available in the
-    // current directory.
-    if(std::ifstream("./data/editor/editor.lua").bad()) {
-        if(chdir(PKG_DATADIR) != 0) {
-            PRINT_ERROR << "failed to change directory to data location" << std::endl;
-        }
-    }
-#endif
-#endif
-
-#ifdef __MACH__
-    std::string path;
-    path = argv[0];
-    // remove the binary name
-    path.erase(path.find_last_of('/'));
-    // remove the MacOS directory
-    path.erase(path.find_last_of('/'));
-    // remove the Contents directory
-    path.erase(path.find_last_of('/'));
-    // remove the Editor.app directory
-    path.erase(path.find_last_of('/'));
-    // we are now in a common directory containing both the game and the Editor
-    path.append("/ValyriaTear.app/Contents/Resources/");
-    chdir(path.c_str());
-#endif
-
     QApplication app(argc, argv);
 
     Editor *editor = new Editor();
