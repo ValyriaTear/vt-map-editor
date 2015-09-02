@@ -1,0 +1,11 @@
+
+[Desktop Entry]
+Version=1.0
+Name=Valyria Tear - Map Editor
+Comment=Valyria Tear 2D RPG - Map Editor
+Exec=vt-editor
+StartupNotify=false
+Terminal=false
+Type=Application
+Icon=valyriatear
+Categories=Game;RolePlaying;
