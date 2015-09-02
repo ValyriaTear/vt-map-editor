@@ -1,0 +1,20 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>icons/arrow-left.png</file>
+        <file>icons/arrow-right.png</file>
+        <file>icons/document-new.png</file>
+        <file>icons/edit-delete.png</file>
+        <file>icons/edit-rename.png</file>
+        <file>icons/eye.png</file>
+        <file>icons/go-down.png</file>
+        <file>icons/go-up.png</file>
+        <file>icons/program_icon.ico</file>
+        <file>icons/stock-tool-arrow.png</file>
+        <file>icons/stock-tool-bucket-fill-22.png</file>
+        <file>icons/stock-tool-color-picker-22.png</file>
+        <file>icons/stock-tool-eraser-22.png</file>
+        <file>icons/stock-tool-pencil-22.png</file>
+        <file>icons/stock-tool-rect-select-22.png</file>
+  </qresource>
+</RCC>
