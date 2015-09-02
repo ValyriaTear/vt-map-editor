@@ -52,7 +52,7 @@ If(UNIX)
     INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data" DESTINATION ${PKG_DATADIR} FILES_MATCHING PATTERN "*.png")
     # icon file
     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/data/icons/program_icon.png"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps RENAME valyriatear.png)
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps RENAME vt-editor.png)
     # KDE/Gnome app center app data
     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/vt-editor.appdata.xml"
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appdata)

@@ -7,5 +7,5 @@ Exec=vt-editor
 StartupNotify=false
 Terminal=false
 Type=Application
-Icon=valyriatear
+Icon=vt-editor
 Categories=Game;RolePlaying;
