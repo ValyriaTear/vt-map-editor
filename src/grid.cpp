@@ -32,7 +32,7 @@
 #include <QGraphicsSceneContextMenuEvent>
 
 #ifndef QT_NO_OPENGL
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #endif
 
 using namespace vt_script;
@@ -138,18 +138,8 @@ Grid::Grid(QWidget *parent, const QString &name, uint32 width, uint32 height) :
     _graphics_view->setBackgroundBrush(QBrush(Qt::black));
     _graphics_view->setScene(this);
 
-    // If OpenGL is supported, let's use it.
-#ifndef QT_NO_OPENGL
-    if (QGLFormat::hasOpenGL() && !qobject_cast<QGLWidget*>(_graphics_view->viewport())) {
-        QGLFormat format = QGLFormat::defaultFormat();
-        format.setDepth(false); // No depth buffer needed for 2D surfaces
-        format.setSampleBuffers(true); // Enable anti-aliasing
-        _graphics_view->setViewport(new QGLWidget(format));
-    } else {
-        // Helps with rendering when not using OpenGL
-        _graphics_view->setOptimizationFlags(QGraphicsView::DontAdjustForAntialiasing);
-    }
-#endif
+    // Helps with rendering when not using OpenGL
+    _graphics_view->setOptimizationFlags(QGraphicsView::DontAdjustForAntialiasing);
 
     _graphics_view->setMouseTracking(true);
     // Helps when resizing
@@ -158,9 +148,9 @@ Grid::Grid(QWidget *parent, const QString &name, uint32 width, uint32 height) :
     UpdateScene();
 
     // Set default editing modes.
-    _tile_mode  = PAINT_TILE;
+    _tile_mode = PAINT_TILE;
     _layer_id = 0;
-    _moving     = false;
+    _moving = false;
 
     // Clear the undo/redo vectors.
     _tile_indeces.clear();
@@ -784,12 +774,19 @@ void Grid::UpdateScene()
                      continue;
 
                 int32 tileset_index = layer_index / 256;
+                if (tileset_index >= static_cast<int32>(tilesets.size())) {
+                    std::cout << "Error: Invalid tileset index: " << tileset_index << " / "
+                              << tilesets.size() << std::endl;
+                    continue;
+                }
+
                 // Don't divide by zero
                 int32 tile_index = 0;
                 if(tileset_index == 0)
                     tile_index = layer_index;
                 else
                     tile_index = layer_index % (tileset_index * 256);
+
                 addPixmap(tilesets[tileset_index]->tiles[tile_index])->setPos(x * TILE_WIDTH, y * TILE_HEIGHT);
             }
 
@@ -1198,7 +1195,7 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
     // get reference to current tileset
     Editor *editor = static_cast<Editor *>(_graphics_view->topLevelWidget());
     QTableWidget *table = static_cast<QTableWidget *>(editor->_ed_tabs->currentWidget());
-    QString tileset_name = editor->_ed_tabs->tabText(editor->_ed_tabs->currentIndex());
+    QString tileset_name = tileset_def_names.at(editor->_ed_tabs->currentIndex());
 
     // Detect the first selection range and use to paint an area
     QList<QTableWidgetSelectionRange> selections = table->selectedRanges();
@@ -1206,11 +1203,12 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
     if(selections.size() > 0)
         selection = selections.at(0);
 
+    // calculate index of current tileset
     int32 multiplier = tileset_def_names.indexOf(tileset_name);
     if(multiplier == -1) {
-        tileset_def_names.append(tileset_name);
-        multiplier = tileset_def_names.indexOf(tileset_name);
-    } // calculate index of current tileset
+        std::cout << "Error: tileset name not found: " << tileset_name.toStdString() << std::endl;
+        return;
+    }
 
     if(selections.size() > 0 && (selection.columnCount() * selection.rowCount() > 1)) {
         // Draw tiles from tileset selection onto map, one tile at a time.
@@ -1263,30 +1261,38 @@ void Grid::_DeleteTile(int32 index_x, int32 index_y)
 
 void Grid::_AutotileRandomize(int32 &tileset_num, int32 &tile_index)
 {
+    // Can't do randomization when an invalid tileset is called.
+    if (tileset_num >= static_cast<int32>(tilesets.size())) {
+        std::cout << __LINE__ << "Invalid tileset index: " << tileset_num
+                  << " / " << tilesets.size() << std::endl;
+        return;
+    }
+
     std::map<int, std::string>::iterator it = tilesets[tileset_num]->
             autotileability.find(tile_index);
 
-    if(it != tilesets[tileset_num]->autotileability.end()) {
-        // Set up for opening autotiling.lua.
-        ReadScriptDescriptor read_data;
-        if(read_data.OpenFile("data/tilesets/autotiling.lua") == false)
-            QMessageBox::warning(_graphics_view, "Loading File...",
-                                 QString("ERROR: could not open data/tilesets/autotiling.lua for reading!"));
+    if(it == tilesets[tileset_num]->autotileability.end())
+        return;
 
-        read_data.OpenTable(it->second);
-        int32 random_index = vt_utils::RandomBoundedInteger(1, static_cast<int32>(read_data.GetTableSize()));
-        read_data.OpenTable(random_index);
-        std::string tileset_name = read_data.ReadString(1);
-        tile_index = read_data.ReadInt(2);
-        read_data.CloseTable();
-        tileset_num = tileset_def_names.indexOf(
-                          QString(tileset_name.c_str()));
-        read_data.CloseTable();
+    // Set up for opening autotiling.lua.
+    ReadScriptDescriptor read_data;
+    if(read_data.OpenFile("data/tilesets/autotiling.lua") == false)
+        QMessageBox::warning(_graphics_view, "Loading File...",
+                                QString("ERROR: could not open data/tilesets/autotiling.lua for reading!"));
 
-        read_data.CloseFile();
+    read_data.OpenTable(it->second);
+    int32 random_index = vt_utils::RandomBoundedInteger(1, static_cast<int32>(read_data.GetTableSize()));
+    read_data.OpenTable(random_index);
+    std::string tileset_name = read_data.ReadString(1);
+    tile_index = read_data.ReadInt(2);
+    read_data.CloseTable();
+    tileset_num = tileset_def_names.indexOf(
+                        QString(tileset_name.c_str()));
+    read_data.CloseTable();
 
-        _AutotileTransitions(tileset_num, tile_index, it->second);
-    } // must have an autotileable tile
+    read_data.CloseFile();
+
+    _AutotileTransitions(tileset_num, tile_index, it->second);
 }
 
 

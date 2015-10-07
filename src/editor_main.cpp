@@ -18,19 +18,16 @@
 #include "utils/utils_pch.h"
 #include "editor.h"
 
-// Used to permit compilation as qmake will create a makefile requiring qMain
-// as the main app function, and the aliasing of main prevents this to work
-// with Qt 4.8.3.
-#if defined(main)
-#undef main
-#endif
-
 using namespace vt_script;
 using namespace vt_editor;
 
 int main(int argc, char **argv)
 {
+    Q_INIT_RESOURCE(data);
+
     QApplication app(argc, argv);
+    app.setOrganizationName("QtProject");
+    app.setApplicationName("VT - Map Editor");
 
     Editor *editor = new Editor();
     editor->setWindowTitle("Map Editor");
