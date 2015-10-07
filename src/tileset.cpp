@@ -28,8 +28,8 @@
 
 using namespace vt_script;
 
-const uint32 num_rows = 16;
-const uint32 num_cols = 16;
+const uint32_t num_rows = 16;
+const uint32_t num_cols = 16;
 
 namespace vt_editor
 {
@@ -99,14 +99,14 @@ bool Tileset::New(const QString &img_filename, const QString& root_folder, bool 
     }
     else {
 
-        for(uint32 row = 0; row < num_rows; ++row) {
-            for(uint32 col = 0; col < num_cols; ++col) {
+        for(uint32_t row = 0; row < num_rows; ++row) {
+            for(uint32_t col = 0; col < num_cols; ++col) {
                 rectangle.setRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH,
                                 TILE_HEIGHT);
                 QImage tile = entire_tileset.copy(rectangle);
                 if(!tile.isNull()) {
                     // linearize the tile index
-                    uint32 i = num_rows * row + col;
+                    uint32_t i = num_rows * row + col;
                     tiles[i].convertFromImage(tile);
                 } else {
                     qDebug("Image loading error!");
@@ -116,9 +116,9 @@ bool Tileset::New(const QString &img_filename, const QString& root_folder, bool 
     }
 
     // Initialize the rest of the tileset data
-    std::vector<int32> blank_entry(4, 0);
-    for(uint32 i = 0; i < 16; ++i)
-        for(uint32 j = 0; j < 16; ++j)
+    std::vector<int32_t> blank_entry(4, 0);
+    for(uint32_t i = 0; i < 16; ++i)
+        for(uint32_t j = 0; j < 16; ++j)
             walkability.insert(std::make_pair(i * 16 + j, blank_entry));
 
     autotileability.clear();
@@ -178,14 +178,14 @@ bool Tileset::Load(const QString &def_filename, const QString& root_folder, bool
     }
     else {
 
-        for(uint32 row = 0; row < num_rows; ++row) {
-            for(uint32 col = 0; col < num_cols; ++col) {
+        for(uint32_t row = 0; row < num_rows; ++row) {
+            for(uint32_t col = 0; col < num_cols; ++col) {
                 rectangle.setRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH,
                                 TILE_HEIGHT);
                 QImage tile = entire_tileset.copy(rectangle);
                 if(!tile.isNull()) {
                     // linearize the tile index
-                    uint32 i = num_rows * row + col;
+                    uint32_t i = num_rows * row + col;
                     tiles[i].convertFromImage(tile);
                 } else {
                     qDebug("Image loading error!");
@@ -197,22 +197,22 @@ bool Tileset::Load(const QString &def_filename, const QString& root_folder, bool
     // Read in autotiling information.
     if(read_data.DoesTableExist("autotiling") == true) {
         // Contains the keys (indeces, if you will) of this table's entries
-        std::vector<int32> keys;
-        uint32 table_size = read_data.GetTableSize("autotiling");
+        std::vector<int32_t> keys;
+        uint32_t table_size = read_data.GetTableSize("autotiling");
         read_data.OpenTable("autotiling");
 
         read_data.ReadTableKeys(keys);
-        for(uint32 i = 0; i < table_size; ++i)
+        for(uint32_t i = 0; i < table_size; ++i)
             autotileability[keys[i]] = read_data.ReadString(keys[i]);
         read_data.CloseTable();
     } // make sure table exists first
 
     // Read in walkability information.
     if(read_data.DoesTableExist("walkability") == true) {
-        std::vector<int32> vect;  // used to read in vectors from the data file
+        std::vector<int32_t> vect;  // used to read in vectors from the data file
         read_data.OpenTable("walkability");
 
-        for(int32 i = 0; i < 16; ++i) {
+        for(int32_t i = 0; i < 16; ++i) {
             read_data.OpenTable(i);
             // Make sure that at least one row exists
             if(read_data.IsErrorDetected() == true) {
@@ -223,7 +223,7 @@ bool Tileset::Load(const QString &def_filename, const QString& root_folder, bool
                 return false;
             }
 
-            for(int32 j = 0; j < 16; ++j) {
+            for(int32_t j = 0; j < 16; ++j) {
                 read_data.ReadIntVector(j, vect);
                 if(read_data.IsErrorDetected() == false)
                     walkability[i * 16 + j] = vect;
@@ -236,17 +236,17 @@ bool Tileset::Load(const QString &def_filename, const QString& root_folder, bool
 
     // Read in animated tiles.
     if(read_data.DoesTableExist("animated_tiles") == true) {
-        uint32 table_size = read_data.GetTableSize("animated_tiles");
+        uint32_t table_size = read_data.GetTableSize("animated_tiles");
         read_data.OpenTable("animated_tiles");
 
-        for(uint32 i = 1; i <= table_size; ++i) {
+        for(uint32_t i = 1; i <= table_size; ++i) {
             _animated_tiles.push_back(std::vector<AnimatedTileData>());
             std::vector<AnimatedTileData>& tiles = _animated_tiles.back();
             // Calculate loop end: an animated tile is comprised of a tile id
             // and a time, so the loop end is really half the table size.
-            uint32 tile_count = read_data.GetTableSize(i) / 2;
+            uint32_t tile_count = read_data.GetTableSize(i) / 2;
             read_data.OpenTable(i);
-            for(uint32 index = 1; index <= tile_count; index++) {
+            for(uint32_t index = 1; index <= tile_count; index++) {
                 AnimatedTileData anim_tile;
                 anim_tile.tile_id = read_data.ReadUInt(index * 2 - 1);
                 anim_tile.time    = read_data.ReadUInt(index * 2);
@@ -295,9 +295,9 @@ bool Tileset::Save(const QString& root_folder)
     // Write walkability data
     write_data.WriteComment("The general walkability of the tiles in the tileset. Zero indicates walkable. One tile has four walkable quadrants listed as: NW corner, NE corner, SW corner, SE corner.");
     write_data.BeginTable("walkability");
-    for(uint32 row = 0; row < 16; row++) {
+    for(uint32_t row = 0; row < 16; row++) {
         write_data.BeginTable(row);
-        for(uint32 col = 0; col < 16; col++)
+        for(uint32_t col = 0; col < 16; col++)
             write_data.WriteIntVector(col, walkability[row * 16 + col]);
         write_data.EndTable();
     } // iterate through all rows of the tileset
@@ -308,9 +308,9 @@ bool Tileset::Save(const QString& root_folder)
     if(_animated_tiles.empty() == false) {
         write_data.WriteComment("The animated tiles table has one row per animated tile, with each entry in a row indicating which tile in the tileset is the next part of the animation, followed by the time in ms that the tile will be displayed for.");
         write_data.BeginTable("animated_tiles");
-        std::vector<uint32> vect;
-        for(uint32 anim_tile = 0; anim_tile < _animated_tiles.size(); ++anim_tile) {
-            for(uint32 i = 0; i < _animated_tiles[anim_tile].size(); ++i) {
+        std::vector<uint32_t> vect;
+        for(uint32_t anim_tile = 0; anim_tile < _animated_tiles.size(); ++anim_tile) {
+            for(uint32_t i = 0; i < _animated_tiles[anim_tile].size(); ++i) {
                 vect.push_back(_animated_tiles[anim_tile][i].tile_id);
                 vect.push_back(_animated_tiles[anim_tile][i].time);
             } // iterate through all tiles in one animated tile
@@ -356,9 +356,9 @@ TilesetTable::TilesetTable() :
     table->horizontalHeader()->hide();
     table->horizontalHeader()->setContentsMargins(0, 0, 0, 0);
 
-    for(uint32 i = 0; i < num_rows; ++i)
+    for(uint32_t i = 0; i < num_rows; ++i)
         table->setRowHeight(i, TILE_HEIGHT);
-    for(uint32 i = 0; i < num_cols; ++i)
+    for(uint32_t i = 0; i < num_cols; ++i)
         table->setColumnWidth(i, TILE_WIDTH);
 } // TilesetTable constructor
 
@@ -378,8 +378,8 @@ bool TilesetTable::Load(const QString &def_filename, const QString& root_folder)
     QRect rectangle;
     QImage entire_tileset;
     entire_tileset.load(root_folder + _tileset_image_filename, "png");
-    for(uint32 row = 0; row < num_rows; ++row) {
-        for(uint32 col = 0; col < num_cols; ++col) {
+    for(uint32_t row = 0; row < num_rows; ++row) {
+        for(uint32_t col = 0; col < num_cols; ++col) {
             rectangle.setRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH,
                               TILE_HEIGHT);
             QVariant variant = entire_tileset.copy(rectangle);

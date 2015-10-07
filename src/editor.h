@@ -156,7 +156,7 @@ private slots:
     void _UpdateSelectedLayer(QTreeWidgetItem *item);
 
     //! Select the layer id in the layer view.
-    void _SetSelectedLayer(uint32 layer_id);
+    void _SetSelectedLayer(uint32_t layer_id);
 
     //! Toggle the current layer visibility
     void _ToggleLayerVisibility();
@@ -278,8 +278,8 @@ class LayerCommand: public QUndoCommand
     friend class EditorScrollView;
 
 public:
-    LayerCommand(std::vector<QPoint> indeces, std::vector<int32> previous,
-                 std::vector<int32> modified, uint32 layer_id, Editor *editor,
+    LayerCommand(std::vector<QPoint> indeces, std::vector<int32_t> previous,
+                 std::vector<int32_t> modified, uint32_t layer_id, Editor *editor,
                  const QString &text = "Layer Operation", QUndoCommand *parent = 0);
 
     //! \name Undo Functions
@@ -296,12 +296,12 @@ private:
     //!        of each vector should correspond to the j-th element of the other vectors.
     //{@
     std::vector<QPoint> _tile_indeces;  //! A vector of tile indeces in the map that were modified by this command.
-    std::vector<int32> _previous_tiles;//! A vector of indeces into tilesets of the modified tiles before they were modified.
-    std::vector<int32> _modified_tiles;//! A vector of indeces into tilesets of the modified tiles after they were modified.
+    std::vector<int32_t> _previous_tiles;//! A vector of indeces into tilesets of the modified tiles before they were modified.
+    std::vector<int32_t> _modified_tiles;//! A vector of indeces into tilesets of the modified tiles after they were modified.
     //@}
 
     //! Indicates which map layer this command was performed upon.
-    uint32 _edited_layer_id;
+    uint32_t _edited_layer_id;
 
     //! A reference to the main window so we can get the current map.
     Editor *_editor;

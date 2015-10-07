@@ -79,20 +79,6 @@ std::vector<std::string> ListDirectory(const std::string &dir_name, const std::s
 **/
 bool DeleteFile(const std::string &filename);
 
-//! \name User directory and settings paths
-//@{
-//! \brief Gives the OS specific directory path to save and retrieve user data
-const std::string GetUserDataPath();
-
-//! \brief Gives the OS specific directory path to save and retrieve user config data
-const std::string GetUserConfigPath();
-
-/** \brief Gives the path and filename of the settings file to use
-*** \return A string with the settings filename, or an empty string if the settings file could not be found
-**/
-const std::string GetSettingsFilename();
-//@}
-
 } // namespace vt_utils
 
 #endif // __UTILS_FILES_HEADER__

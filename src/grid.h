@@ -29,8 +29,8 @@ namespace vt_editor
 {
 
 //! \brief The map tile minimum width and height
-const uint32 map_min_width = 16;
-const uint32 map_min_height = 12;
+const uint32_t map_min_width = 16;
+const uint32_t map_min_height = 12;
 
 //! \brief Represents different types of transition patterns for autotileable tiles.
 enum TRANSITION_PATTERN_TYPE {
@@ -88,7 +88,7 @@ public:
     std::string name;
     LAYER_TYPE layer_type;
     // Represents the tile indeces: i.e: tiles[y][x] = tile_id at (x,y)
-    std::vector< std::vector<int32> > tiles;
+    std::vector< std::vector<int32_t> > tiles;
     // Tells whether the layer is currently visible.
     bool visible;
 
@@ -98,16 +98,16 @@ public:
     }
 
     // Resize a layer to the given map size
-    void Resize(uint32 width, uint height) {
+    void Resize(uint32_t width, uint height) {
         tiles.resize(height);
-        for(uint32 y = 0; y < height; ++y)
+        for(uint32_t y = 0; y < height; ++y)
             tiles[y].resize(width);
     }
 
     // Fill a layer with the given tile index value.
-    void Fill(int32 tile_id = -1) {
-        for(uint32 y = 0; y < tiles.size(); ++y) {
-            for(uint32 x = 0; x < tiles[y].size(); ++x)
+    void Fill(int32_t tile_id = -1) {
+        for(uint32_t y = 0; y < tiles.size(); ++y) {
+            for(uint32_t x = 0; x < tiles[y].size(); ++x)
                 tiles[y][x] = tile_id;
         }
     }
@@ -142,7 +142,7 @@ class Grid : public QGraphicsScene
 
 public:
     Grid(QWidget *parent = 0, const QString &name = QString(tr("Untitled")),
-         uint32 width = 0, uint32 height = 0);
+         uint32_t width = 0, uint32_t height = 0);
 
     ~Grid();
 
@@ -151,10 +151,10 @@ public:
     QString GetFileName() const {
         return _file_name;
     }
-    uint32  GetHeight()   const {
+    uint32_t  GetHeight()   const {
         return _height;
     }
-    uint32  GetWidth()    const {
+    uint32_t  GetWidth()    const {
         return _width;
     }
     bool    GetChanged()  const {
@@ -165,7 +165,7 @@ public:
         return _tile_layers;
     }
 
-    std::vector<std::vector<int32> >& GetSelectionLayer() {
+    std::vector<std::vector<int32_t> >& GetSelectionLayer() {
         return _select_layer;
     }
 
@@ -175,12 +175,12 @@ public:
     void SetFileName(QString filename) {
         _file_name = filename;
     }
-    void SetHeight(uint32 height)      {
+    void SetHeight(uint32_t height)      {
         _height    = height;
         UpdateScene();
         _changed = true;
     }
-    void SetWidth(uint32 width)        {
+    void SetWidth(uint32_t width)        {
         _width     = width;
         UpdateScene();
         _changed = true;
@@ -231,7 +231,7 @@ public:
     ***
     *** \param layer_id the layer id to delete.
     **/
-    void DeleteLayer(uint32 layer_id);
+    void DeleteLayer(uint32_t layer_id);
 
     /** \name Context Modification Functions (Right-Click)
     *** \brief Functions to insert or delete rows or columns of tiles from the
@@ -245,10 +245,10 @@ public:
     ***       parameter.
     **/
     //{@
-    void InsertRow(uint32 tile_index);
-    void InsertCol(uint32 tile_index);
-    void DeleteRow(uint32 tile_index);
-    void DeleteCol(uint32 tile_index);
+    void InsertRow(uint32_t tile_index);
+    void InsertCol(uint32_t tile_index);
+    void DeleteRow(uint32_t tile_index);
+    void DeleteCol(uint32_t tile_index);
     //@}
 
     //! \brief List the layer names, types, ...
@@ -276,14 +276,14 @@ public:
 private:
     // Computes the next layer id to put for the givent layer type,
     // Used when creating a new layer.
-    uint32 _GetNextLayerId(const LAYER_TYPE &layer_type);
+    uint32_t _GetNextLayerId(const LAYER_TYPE &layer_type);
 
     //! \brief The map's file name.
     QString _file_name;
     //! \brief The height of the map in tiles.
-    uint32 _height;
+    uint32_t _height;
     //! \brief The width of the map in tiles.
-    uint32 _width;
+    uint32_t _width;
 
     //! \brief When TRUE the map has been modified.
     bool _changed;
@@ -306,13 +306,13 @@ private:
     *** nor the game. It acts similar to an actual tile layer as far as drawing
     *** is concerned.
     **/
-    std::vector<std::vector<int32> > _select_layer;
+    std::vector<std::vector<int32_t> > _select_layer;
 
     // Draw the tile grid (actually adds the line to the graphics scene)
     void _DrawGrid();
 
     //! Gets currently edited layer
-    std::vector<std::vector<int32> >& GetCurrentLayer();
+    std::vector<std::vector<int32_t> >& GetCurrentLayer();
 
 protected:
     //! \name Mouse Processing Functions
@@ -344,9 +344,9 @@ private:
     //!        such as painting, deleting, and moving.
     //! \param index The index on the map/grid of the tile to modify.
     //{@
-    void _PaintTile(int32 x, int32 y);
-    //void _MoveTile(int32 index);
-    void _DeleteTile(int32 x, int32 y);
+    void _PaintTile(int32_t x, int32_t y);
+    //void _MoveTile(int32_t index);
+    void _DeleteTile(int32_t x, int32_t y);
     //@}
 
     //! \name Autotiling Functions
@@ -362,8 +362,8 @@ private:
     //! \param tile_index The index of the selected tile in its tileset.
     //! \param tile_group The autotileable group that the current tile belongs to.
     //{@
-    void _AutotileRandomize(int32 &tileset_num, int32 &tile_index);
-    void _AutotileTransitions(int32 &tileset_num, int32 &tile_index, const std::string &tile_group);
+    void _AutotileRandomize(int32_t &tileset_num, int32_t &tile_index);
+    void _AutotileTransitions(int32_t &tileset_num, int32_t &tile_index, const std::string &tile_group);
     TRANSITION_PATTERN_TYPE _CheckForTransitionPattern(const std::string &current_group,
             const std::vector<std::string>& surrounding_groups, std::string &border_group);
     //@}
@@ -381,19 +381,19 @@ private:
     //! Current tile edit mode being used.
     TILE_MODE_TYPE _tile_mode;
     //! Current layer being edited.
-    uint32 _layer_id;
+    uint32_t _layer_id;
     //! Mouse is at this tile index on the map.
-    int32 _tile_index_x;
-    int32 _tile_index_y;
+    int32_t _tile_index_x;
+    int32_t _tile_index_y;
     //! Menu used on right-clicks of the mouse on the map.
     QMenu *_context_menu;
 
     //! Stores first index, i.e. beginning, of the selection rectangle.
-    int32 _first_corner_index_x;
-    int32 _first_corner_index_y;
+    int32_t _first_corner_index_x;
+    int32_t _first_corner_index_y;
     //! Stores source index of the moved tile.
-    int32 _move_source_index_x;
-    int32 _move_source_index_y;
+    int32_t _move_source_index_x;
+    int32_t _move_source_index_y;
     //! Moving tiles has 2 phases to it when using the selection rectangle
     //! and hence moving more than one tile at a time. This determines which phase
     //! is in effect: false is the first phase, when the user creates the
@@ -407,8 +407,8 @@ private:
     //!        of each vector should correspond to the j-th element of the other vectors.
     //{@
     std::vector<QPoint> _tile_indeces;  //! A vector of tile indeces in the map that were modified by a command.
-    std::vector<int32> _previous_tiles;//! A vector of indeces into tilesets of the modified tiles before they were modified.
-    std::vector<int32> _modified_tiles;//! A vector of indeces into tilesets of the modified tiles after they were modified.
+    std::vector<int32_t> _previous_tiles;//! A vector of indeces into tilesets of the modified tiles before they were modified.
+    std::vector<int32_t> _modified_tiles;//! A vector of indeces into tilesets of the modified tiles after they were modified.
     //@}
 
 }; // class Grid : public QGraphicsScene

@@ -43,9 +43,9 @@ const unsigned int TILE_HEIGHT = 32;
 struct AnimatedTileData {
     //! \brief Index into tileset represents tile which will be part of the
     //         animation sequence.
-    uint32 tile_id;
+    uint32_t tile_id;
     //! \brief Time in milliseconds to display this particular tile.
-    uint32 time;
+    uint32_t time;
 };
 
 
@@ -128,7 +128,7 @@ public:
     std::vector<QPixmap> tiles;
 
     //! \brief Contains walkability information for each tile.
-    std::map<int, std::vector<int32> > walkability;
+    std::map<int, std::vector<int32_t> > walkability;
 
     //! \brief Contains autotiling information for any autotileable tile.
     std::map<int, std::string> autotileability;

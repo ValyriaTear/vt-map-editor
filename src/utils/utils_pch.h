@@ -138,27 +138,6 @@ extern "C" {
 #define IF_PRINT_WARNING(var) if (var) std::cout << "WARNING:" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << ": " << std::endl
 //@}
 
-//! \brief Different App full, shortnames, and directories
-#define APPFULLNAME "Valyria Tear"
-#define APPSHORTNAME "valyriatear"
-#define APPUPCASEDIRNAME "ValyriaTear"
-
-/** \name Integer Types
-*** \brief These are the integer types used throughout the source code.
-*** These types are created by redefining the ANSI C types.
-*** Use of the standard int, long, etc. is forbidden in the source code! Don't attempt to use any
-*** 64-bit types either, since a large population of PCs in our target audience are not a 64-bit
-*** architecture.
-**/
-//@{
-typedef int32_t   int32;
-typedef uint32_t  uint32;
-typedef int16_t   int16;
-typedef uint16_t  uint16;
-typedef int8_t    int8;
-typedef uint8_t   uint8;
-//@}
-
 //! Contains utility code used across the entire source code
 namespace vt_utils
 {

@@ -75,7 +75,7 @@ LAYER_TYPE &operator++(LAYER_TYPE &value, int /*dummy*/)
 }
 
 
-Grid::Grid(QWidget *parent, const QString &name, uint32 width, uint32 height) :
+Grid::Grid(QWidget *parent, const QString &name, uint32_t width, uint32_t height) :
     QGraphicsScene(),
     _ed_scrollarea(nullptr),
     _file_name(name),
@@ -95,9 +95,9 @@ Grid::Grid(QWidget *parent, const QString &name, uint32 width, uint32 height) :
     // Initialize layers with -1 to indicate that no tile/object/etc. is
     // present at this location
     _select_layer.resize(_height);
-    for(uint32 y = 0; y < _height; ++y) {
+    for(uint32_t y = 0; y < _height; ++y) {
         _select_layer[y].resize(_width);
-        for(uint32 x = 0; x < _width; ++x) {
+        for(uint32_t x = 0; x < _width; ++x) {
             _select_layer[y][x] = -1;
         }
     }
@@ -119,12 +119,12 @@ Grid::Grid(QWidget *parent, const QString &name, uint32 width, uint32 height) :
     _tile_layers[1].tiles.resize(_height);
     _tile_layers[2].tiles.resize(_height);
     _tile_layers[3].tiles.resize(_height);
-    for(uint32 y = 0; y < _height; ++y) {
+    for(uint32_t y = 0; y < _height; ++y) {
         _tile_layers[0].tiles[y].resize(_width);
         _tile_layers[1].tiles[y].resize(_width);
         _tile_layers[2].tiles[y].resize(_width);
         _tile_layers[3].tiles[y].resize(_width);
-        for(uint32 x = 0; x < _width; ++x) {
+        for(uint32_t x = 0; x < _width; ++x) {
             _tile_layers[0].tiles[y][x] = -1;
             _tile_layers[1].tiles[y][x] = -1;
             _tile_layers[2].tiles[y][x] = -1;
@@ -198,8 +198,8 @@ Grid::~Grid()
 
 void Grid::ClearSelectionLayer()
 {
-    for(uint32 y = 0; y < _height; ++y) {
-        for(uint32 x = 0; x < _width; ++x) {
+    for(uint32_t y = 0; y < _height; ++y) {
+        for(uint32_t x = 0; x < _width; ++x) {
             _select_layer[y][x] = -1;
         }
     }
@@ -210,7 +210,7 @@ bool Grid::LoadMap()
     // File descriptor for the map data that is to be read
     ReadScriptDescriptor read_data;
     // Used to read in vectors from the file
-    std::vector<int32> vect;
+    std::vector<int32_t> vect;
     // Used as the window title for any errors that are detected and to notify
     // the user via a message box
     QString message_box_title("Load File Error");
@@ -253,9 +253,9 @@ bool Grid::LoadMap()
 
     // Create selection layer
     _select_layer.resize(_height);
-    for(uint32 y = 0; y < _height; ++y) {
+    for(uint32_t y = 0; y < _height; ++y) {
         _select_layer[y].resize(_width);
-        for(uint32 x = 0; x < _width; ++x) {
+        for(uint32_t x = 0; x < _width; ++x) {
             _select_layer[y][x] = -1;
         }
     }
@@ -263,8 +263,8 @@ bool Grid::LoadMap()
     // Loads the tileset definition filenames
     tileset_def_names.clear();
     if (read_data.OpenTable("tileset_filenames")) {
-        uint32 table_size = read_data.GetTableSize();
-        for(uint32 i = 1; i <= table_size; ++i) {
+        uint32_t table_size = read_data.GetTableSize();
+        for(uint32_t i = 1; i <= table_size; ++i) {
             tileset_def_names.push_back(read_data.ReadString(i).c_str());
         }
         read_data.CloseTable();
@@ -281,10 +281,10 @@ bool Grid::LoadMap()
 
     // Read the map tile layer data
     read_data.OpenTable("layers");
-    uint32 layers_num = read_data.GetTableSize();
+    uint32_t layers_num = read_data.GetTableSize();
 
     // Parse the 'layers' table
-    for(uint32 layer_id = 0; layer_id < layers_num; ++layer_id) {
+    for(uint32_t layer_id = 0; layer_id < layers_num; ++layer_id) {
 
         if(!read_data.DoesTableExist(layer_id))
             continue;
@@ -298,7 +298,7 @@ bool Grid::LoadMap()
             read_data.CloseFile();
             QMessageBox::warning(_graphics_view, message_box_title,
                                  QString(tr("Ignoring unexisting layer type: %i in file: %s").arg(
-                                             (int32)layer_type).arg(read_data.GetFilename().c_str())));
+                                             (int32_t)layer_type).arg(read_data.GetFilename().c_str())));
             return false;
         }
 
@@ -311,7 +311,7 @@ bool Grid::LoadMap()
         _tile_layers[layer_id].name = read_data.ReadString("name");
 
         // Parse layers[layer_id].tiles[y]
-        for(uint32 y = 0; y < _height; ++y) {
+        for(uint32_t y = 0; y < _height; ++y) {
             if(!read_data.DoesTableExist(y)) {
                 QMessageBox::warning(_graphics_view, message_box_title,
                                      QString(tr("Missing layers[%i][%i] in file: %s")
@@ -333,7 +333,7 @@ bool Grid::LoadMap()
                 return false;
             }
 
-            for(std::vector<int32>::iterator it = vect.begin(); it != vect.end(); ++it)
+            for(std::vector<int32_t>::iterator it = vect.begin(); it != vect.end(); ++it)
                 _tile_layers[layer_id].tiles[y].push_back(*it);
             vect.clear();
         } // iterate through the rows of the layer
@@ -380,7 +380,7 @@ void Grid::SaveMap()
     write_data.InsertNewLine();
     write_data.WriteComment("The tilesets definition files used.");
     write_data.BeginTable("tileset_filenames");
-    uint32 i = 0;
+    uint32_t i = 0;
     for(QStringList::Iterator qit = tileset_def_names.begin();
             qit != tileset_def_names.end(); ++qit) {
         ++i;
@@ -392,26 +392,26 @@ void Grid::SaveMap()
     write_data.WriteComment("The map grid to indicate walkability. 0 is walkable, 1 is not.");
     write_data.BeginTable("map_grid");
     //[layer][walkability]
-    std::vector<std::vector<int32> > walk_vect;
+    std::vector<std::vector<int32_t> > walk_vect;
     // Used to save the northern walkability info of tiles in all layers of
     // all contexts; initialize to walkable.
-    std::vector<int32> map_row_north(_width * 2, 0);
+    std::vector<int32_t> map_row_north(_width * 2, 0);
     // Used to save the southern walkability info of tiles in all layers of
     // all contexts; initialize to walkable.
-    std::vector<int32> map_row_south(_width * 2, 0);
+    std::vector<int32_t> map_row_south(_width * 2, 0);
 
-    for(uint32 y = 0; y < _height; ++y) {
+    for(uint32_t y = 0; y < _height; ++y) {
         // Iterate through all layers, column by column, row by row.
-        for(uint32 x = 0; x < _width; ++x) {
+        for(uint32_t x = 0; x < _width; ++x) {
 
             // Indicates whether a painted tile is present on at least one layer.
             bool no_tile_at_all = true;
 
             // linearized coords
-            int32 col = y * _width + x;
+            int32_t col = y * _width + x;
 
             // Get walkability for each tile layers.
-            for(uint32 layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
+            for(uint32_t layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
                 // Don't deal with sky layers
                 if(_tile_layers[layer_id].layer_type == SKY_LAYER)
                     continue;
@@ -451,7 +451,7 @@ void Grid::SaveMap()
                 map_row_south[col % _width * 2 + 1] = 1;
             }
             else {
-                for(uint32 i = 0; i < walk_vect.size(); ++i) {
+                for(uint32_t i = 0; i < walk_vect.size(); ++i) {
                     // NW corner
                     map_row_north[col % _width * 2] |= walk_vect[i][0];
                     // NE corner
@@ -478,18 +478,18 @@ void Grid::SaveMap()
     write_data.WriteComment("The tile layers. The numbers are indeces to the tile_mappings table.");
     write_data.BeginTable("layers");
 
-    uint32 layers_num = _tile_layers.size();
-    for(uint32 layer_id = 0; layer_id < layers_num; ++layer_id) {
+    uint32_t layers_num = _tile_layers.size();
+    for(uint32_t layer_id = 0; layer_id < layers_num; ++layer_id) {
 
         write_data.BeginTable(layer_id);
 
         write_data.WriteString("type", getTypeFromLayer(_tile_layers[layer_id].layer_type));
         write_data.WriteString("name", _tile_layers[layer_id].name);
 
-        std::vector<int32> layer_row;
+        std::vector<int32_t> layer_row;
 
-        for(uint32 y = 0; y < _height; y++) {
-            for(uint32 x = 0; x < _width; x++) {
+        for(uint32_t y = 0; y < _height; y++) {
+            for(uint32_t x = 0; x < _width; x++) {
                 layer_row.push_back(_tile_layers[layer_id].tiles[y][x]);
             } // iterate through the columns of the lower layer
             write_data.WriteIntVector(y, layer_row);
@@ -508,16 +508,16 @@ void Grid::SaveMap()
     _changed = false;
 } // Grid::SaveMap()
 
-std::vector<std::vector<int32> >& Grid::GetCurrentLayer()
+std::vector<std::vector<int32_t> >& Grid::GetCurrentLayer()
 {
     return GetLayers()[_layer_id].tiles;
 }
 
-uint32 Grid::_GetNextLayerId(const LAYER_TYPE &layer_type)
+uint32_t Grid::_GetNextLayerId(const LAYER_TYPE &layer_type)
 {
     // Computes the new layer id
     LAYER_TYPE previous_layer_type = GROUND_LAYER;
-    uint32 i = 0;
+    uint32_t i = 0;
     for(; i < _tile_layers.size(); ++i) {
         LAYER_TYPE current_type = _tile_layers[i].layer_type;
 
@@ -534,7 +534,7 @@ uint32 Grid::_GetNextLayerId(const LAYER_TYPE &layer_type)
 
 void Grid::AddLayer(const LayerInfo &layer_info)
 {
-    uint32 new_layer_id = _GetNextLayerId(layer_info.layer_type);
+    uint32_t new_layer_id = _GetNextLayerId(layer_info.layer_type);
 
     // Prepare the new layer
     Layer layer;
@@ -553,7 +553,7 @@ void Grid::AddLayer(const LayerInfo &layer_info)
     // If the id is taken, we have to insert the layer before the one
     // with the same id.
     std::vector<Layer> new_layers;
-    for(uint32 layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
+    for(uint32_t layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
         // If we have reached the wanted layer id, add the new layer
         if(layer_id == new_layer_id)
             new_layers.push_back(layer);
@@ -568,12 +568,12 @@ void Grid::AddLayer(const LayerInfo &layer_info)
     UpdateScene();
 }
 
-void Grid::DeleteLayer(uint32 layer_id)
+void Grid::DeleteLayer(uint32_t layer_id)
 {
     if(layer_id >= _tile_layers.size())
         return;
 
-    uint32 layer = 0;
+    uint32_t layer = 0;
     std::vector<Layer>::iterator it = _tile_layers.begin();
     std::vector<Layer>::iterator it_end = _tile_layers.end();
     for(; it != it_end; ++it) {
@@ -587,14 +587,14 @@ void Grid::DeleteLayer(uint32 layer_id)
     UpdateScene();
 }
 
-void Grid::InsertRow(uint32 tile_index_y)
+void Grid::InsertRow(uint32_t tile_index_y)
 {
     // Check that tile_index is within acceptable bounds
     if (tile_index_y >= _height)
         return;
 
     // Prepare an empty row (filled with -1.)
-    std::vector<int32> row;
+    std::vector<int32_t> row;
     row.resize(_width, -1);
 
     std::vector<Layer>::iterator it = _tile_layers.begin();
@@ -603,8 +603,8 @@ void Grid::InsertRow(uint32 tile_index_y)
         Layer& layer = (*it);
 
         // We do it naively so it's more portable...
-        std::vector< std::vector<int32> >::iterator tile_y_it = layer.tiles.begin();
-        uint32 y = 0; // the row index
+        std::vector< std::vector<int32_t> >::iterator tile_y_it = layer.tiles.begin();
+        uint32_t y = 0; // the row index
         for (; tile_y_it != layer.tiles.end(); ++tile_y_it) {
             // If the wanted index is found we can delete and break.
             if (y == tile_index_y) {
@@ -620,7 +620,7 @@ void Grid::InsertRow(uint32 tile_index_y)
 } // Grid::InsertRow(...)
 
 
-void Grid::InsertCol(uint32 tile_index_x)
+void Grid::InsertCol(uint32_t tile_index_x)
 {
     // Check that tile_index is within acceptable bounds
     if (tile_index_x >= _width)
@@ -633,9 +633,9 @@ void Grid::InsertCol(uint32 tile_index_x)
         Layer& layer = (*it);
 
         // We do it naively so it's more portable...
-        for (uint32 y = 0; y < layer.tiles.size(); ++y) {
-            std::vector<int32>::iterator tile_x_it = layer.tiles[y].begin();
-            uint32 x = 0; // the column index
+        for (uint32_t y = 0; y < layer.tiles.size(); ++y) {
+            std::vector<int32_t>::iterator tile_x_it = layer.tiles[y].begin();
+            uint32_t x = 0; // the column index
             for (; tile_x_it != layer.tiles[y].end(); ++tile_x_it) {
                 // If the wanted index is found we can delete and break.
                 if (x == tile_index_x) {
@@ -652,7 +652,7 @@ void Grid::InsertCol(uint32 tile_index_x)
 } // Grid::InsertCol(...)
 
 
-void Grid::DeleteRow(uint32 tile_index_y)
+void Grid::DeleteRow(uint32_t tile_index_y)
 {
     // Check that tile_index is within acceptable bounds
     if (tile_index_y >= _height)
@@ -669,8 +669,8 @@ void Grid::DeleteRow(uint32 tile_index_y)
         Layer& layer = (*it);
 
         // We do it naively so it's more portable...
-        std::vector< std::vector<int32> >::iterator tile_y_it = layer.tiles.begin();
-        uint32 y = 0; // the row index
+        std::vector< std::vector<int32_t> >::iterator tile_y_it = layer.tiles.begin();
+        uint32_t y = 0; // the row index
         for (; tile_y_it != layer.tiles.end(); ++tile_y_it) {
             // If the wanted index is found we can delete and break.
             if (y == tile_index_y) {
@@ -687,7 +687,7 @@ void Grid::DeleteRow(uint32 tile_index_y)
 } // Grid::DeleteRow(...)
 
 
-void Grid::DeleteCol(uint32 tile_index_x)
+void Grid::DeleteCol(uint32_t tile_index_x)
 {
     // Check that tile_index is within acceptable bounds
     if (tile_index_x >= _width)
@@ -704,9 +704,9 @@ void Grid::DeleteCol(uint32 tile_index_x)
         Layer& layer = (*it);
 
         // We do it naively so it's more portable...
-        for (uint32 y = 0; y < layer.tiles.size(); ++y) {
-            std::vector<int32>::iterator tile_x_it = layer.tiles[y].begin();
-            uint32 x = 0; // the column index
+        for (uint32_t y = 0; y < layer.tiles.size(); ++y) {
+            std::vector<int32_t>::iterator tile_x_it = layer.tiles[y].begin();
+            uint32_t x = 0; // the column index
             for (; tile_x_it != layer.tiles[y].end(); ++tile_x_it) {
                 // If the wanted index is found we can delete and break.
                 if (x == tile_index_x) {
@@ -725,7 +725,7 @@ void Grid::DeleteCol(uint32 tile_index_x)
 std::vector<QTreeWidgetItem *> Grid::getLayerItems()
 {
     std::vector<QTreeWidgetItem *> layers_names;
-    for(uint32 layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
+    for(uint32_t layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
         QTreeWidgetItem *item = new QTreeWidgetItem();
         // Check for empty names
         QString name = QString::fromStdString(_tile_layers[layer_id].name);
@@ -761,27 +761,27 @@ void Grid::UpdateScene()
     setBackgroundBrush(QBrush(Qt::gray));
 
     // Start drawing from the top left
-    for (uint32 x = 0; x < _width; ++x) {
-        for (uint32 y = 0; y < _height; ++y) {
-            for(uint32 layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
+    for (uint32_t x = 0; x < _width; ++x) {
+        for (uint32_t y = 0; y < _height; ++y) {
+            for(uint32_t layer_id = 0; layer_id < _tile_layers.size(); ++layer_id) {
                 // Don't draw the layer if it's not visible
                 if(!_tile_layers[layer_id].visible)
                     continue;
 
-                 int32 layer_index = _tile_layers[layer_id].tiles[y][x];
+                 int32_t layer_index = _tile_layers[layer_id].tiles[y][x];
                  // Draw tile if one exists at this location
                  if(layer_index == -1)
                      continue;
 
-                int32 tileset_index = layer_index / 256;
-                if (tileset_index >= static_cast<int32>(tilesets.size())) {
+                int32_t tileset_index = layer_index / 256;
+                if (tileset_index >= static_cast<int32_t>(tilesets.size())) {
                     std::cout << "Error: Invalid tileset index: " << tileset_index << " / "
                               << tilesets.size() << std::endl;
                     continue;
                 }
 
                 // Don't divide by zero
-                int32 tile_index = 0;
+                int32_t tile_index = 0;
                 if(tileset_index == 0)
                     tile_index = layer_index;
                 else
@@ -794,7 +794,7 @@ void Grid::UpdateScene()
             if(!_select_on)
                 continue;
 
-            int32 select_layer_index = _select_layer[y][x];
+            int32_t select_layer_index = _select_layer[y][x];
             if(select_layer_index == -1)
                 continue;
             addPixmap(_blue_square)->setPos(x * TILE_WIDTH, y * TILE_HEIGHT);
@@ -817,8 +817,8 @@ void Grid::UpdateScene()
 
 void Grid::_DrawGrid()
 {
-    for (uint32 y = 0; y < (_height * TILE_HEIGHT); y+=32) {
-        for (uint32 x = 0; x < (_width * TILE_WIDTH); x+=32) {
+    for (uint32_t y = 0; y < (_height * TILE_HEIGHT); y+=32) {
+        for (uint32_t x = 0; x < (_width * TILE_WIDTH); x+=32) {
             addLine(0, y, _width * TILE_WIDTH, y, QPen(Qt::DotLine));
             addLine(x, 0, x, _height * TILE_HEIGHT, QPen(Qt::DotLine));
         }
@@ -840,12 +840,12 @@ void Grid::mousePressEvent(QGraphicsSceneMouseEvent *evt)
     Editor *editor = static_cast<Editor *>(_graphics_view->topLevelWidget());
 
     // Takes in account the current scrolling
-    int32 x = evt->scenePos().x();
-    int32 y = evt->scenePos().y();
+    int32_t x = evt->scenePos().x();
+    int32_t y = evt->scenePos().y();
 
     // don't draw outside the map
-    if((y / TILE_HEIGHT) >= static_cast<uint32>(GetHeight()) ||
-            (x / TILE_WIDTH)  >= static_cast<uint32>(GetWidth()) ||
+    if((y / TILE_HEIGHT) >= static_cast<uint32_t>(GetHeight()) ||
+            (x / TILE_WIDTH)  >= static_cast<uint32_t>(GetWidth()) ||
             x < 0 || y < 0)
         return;
 
@@ -903,19 +903,19 @@ void Grid::mouseMoveEvent(QGraphicsSceneMouseEvent *evt)
     Editor *editor = static_cast<Editor *>(_graphics_view->topLevelWidget());
 
     // Takes in account the current scrolling
-    int32 x = evt->scenePos().x();
-    int32 y = evt->scenePos().y();
+    int32_t x = evt->scenePos().x();
+    int32_t y = evt->scenePos().y();
 
     // don't draw outside the map
-    if((y / TILE_HEIGHT) >= static_cast<uint32>(GetHeight()) ||
-            (x / TILE_WIDTH)  >= static_cast<uint32>(GetWidth()) ||
+    if((y / TILE_HEIGHT) >= static_cast<uint32_t>(GetHeight()) ||
+            (x / TILE_WIDTH)  >= static_cast<uint32_t>(GetWidth()) ||
             x < 0 || y < 0) {
         editor->statusBar()->clearMessage();
         return;
     }
 
-    int32 index_x = x / TILE_WIDTH;
-    int32 index_y = y / TILE_HEIGHT;
+    int32_t index_x = x / TILE_WIDTH;
+    int32_t index_y = y / TILE_HEIGHT;
 
     if(index_x != _tile_index_x || index_y != _tile_index_y) { // user has moved onto another tile
         _tile_index_x = index_x;
@@ -999,15 +999,15 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
     Editor *editor = static_cast<Editor *>(_graphics_view->topLevelWidget());
 
     // Takes in account the current scrolling
-    int32 mouse_x = evt->scenePos().x();
-    int32 mouse_y = evt->scenePos().y();
+    int32_t mouse_x = evt->scenePos().x();
+    int32_t mouse_y = evt->scenePos().y();
 
     switch(_tile_mode) {
     case PAINT_TILE: { // wrap up painting tiles
         if(editor->_select_on == true) {
-            std::vector<std::vector<int32> > select_layer = GetSelectionLayer();
-            for(int32 y = 0; y < static_cast<int32>(select_layer.size()); ++y) {
-                for(int32 x = 0; x < static_cast<int32>(select_layer[y].size()); ++x) {
+            std::vector<std::vector<int32_t> > select_layer = GetSelectionLayer();
+            for(int32_t y = 0; y < static_cast<int32_t>(select_layer.size()); ++y) {
+                for(int32_t x = 0; x < static_cast<int32_t>(select_layer[y].size()); ++x) {
                     // Works because the selection layer and the current layer
                     // have the same size.
                     if(select_layer[y][x] != -1)
@@ -1032,7 +1032,7 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
             // record location of released tile
             _tile_index_x = mouse_x / TILE_WIDTH;
             _tile_index_y = mouse_y / TILE_HEIGHT;
-            std::vector<std::vector<int32> >& layer = GetCurrentLayer();
+            std::vector<std::vector<int32_t> >& layer = GetCurrentLayer();
 
             if(editor->_select_on == false) {
                 // Record information for undo/redo action.
@@ -1048,9 +1048,9 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
                 layer[_move_source_index_y][_move_source_index_x] = -1;
             } // only moving one tile at a time
             else {
-                std::vector<std::vector<int32> > select_layer = GetSelectionLayer();
-                for(int32 y = 0; y < static_cast<int32>(select_layer.size()); ++y) {
-                    for(int32 x = 0; x < static_cast<int32>(select_layer[y].size()); ++x) {
+                std::vector<std::vector<int32_t> > select_layer = GetSelectionLayer();
+                for(int32_t y = 0; y < static_cast<int32_t>(select_layer.size()); ++y) {
+                    for(int32_t x = 0; x < static_cast<int32_t>(select_layer[y].size()); ++x) {
                         // Works because the selection layer and the current layer
                         // have the same size.
                         if(select_layer[y][x] != -1) {
@@ -1086,9 +1086,9 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
 
     case DELETE_TILE: { // wrap up deleting tiles
         if(editor->_select_on == true) {
-            std::vector<std::vector<int32> > select_layer = GetSelectionLayer();
-            for(int32 y = 0; y < static_cast<int32>(select_layer.size()); ++y) {
-                for(int32 x = 0; x < static_cast<int32>(select_layer[y].size()); ++x) {
+            std::vector<std::vector<int32_t> > select_layer = GetSelectionLayer();
+            for(int32_t y = 0; y < static_cast<int32_t>(select_layer.size()); ++y) {
+                for(int32_t x = 0; x < static_cast<int32_t>(select_layer[y].size()); ++x) {
                     // Works because the selection layer and the current layer
                     // are the same size.
                     if(select_layer[y][x] != -1)
@@ -1131,12 +1131,12 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
 void Grid::contextMenuEvent(QGraphicsSceneContextMenuEvent *evt)
 {
     // Takes in account the current scrolling
-    int32 mouse_x = evt->scenePos().x();
-    int32 mouse_y = evt->scenePos().y();
+    int32_t mouse_x = evt->scenePos().x();
+    int32_t mouse_y = evt->scenePos().y();
 
     // Don't popup a menu outside the map.
-    if ((mouse_y / TILE_HEIGHT) >= static_cast<uint32>(GetHeight()) ||
-            (mouse_x / TILE_WIDTH)  >= static_cast<uint32>(GetWidth()) ||
+    if ((mouse_y / TILE_HEIGHT) >= static_cast<uint32_t>(GetHeight()) ||
+            (mouse_x / TILE_WIDTH)  >= static_cast<uint32_t>(GetWidth()) ||
             mouse_x < 0 || mouse_y < 0)
         return;
 
@@ -1190,7 +1190,7 @@ void Grid::_MapDeleteColumn()
 // Ex-EditorScrollView class -- private functions
 ///////////////////////////////////////////////////////////////////////////////
 
-void Grid::_PaintTile(int32 index_x, int32 index_y)
+void Grid::_PaintTile(int32_t index_x, int32_t index_y)
 {
     // get reference to current tileset
     Editor *editor = static_cast<Editor *>(_graphics_view->topLevelWidget());
@@ -1204,7 +1204,7 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
         selection = selections.at(0);
 
     // calculate index of current tileset
-    int32 multiplier = tileset_def_names.indexOf(tileset_name);
+    int32_t multiplier = tileset_def_names.indexOf(tileset_name);
     if(multiplier == -1) {
         std::cout << "Error: tileset name not found: " << tileset_name.toStdString() << std::endl;
         return;
@@ -1212,9 +1212,9 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
 
     if(selections.size() > 0 && (selection.columnCount() * selection.rowCount() > 1)) {
         // Draw tiles from tileset selection onto map, one tile at a time.
-        for(int32 i = 0; i < selection.rowCount() && index_y + i < (int32)GetHeight(); i++) {
-            for(int32 j = 0; j < selection.columnCount() && index_x + j < (int32)GetWidth(); j++) {
-                int32 tileset_index = (selection.topRow() + i) * 16 + (selection.leftColumn() + j);
+        for(int32_t i = 0; i < selection.rowCount() && index_y + i < (int32_t)GetHeight(); i++) {
+            for(int32_t j = 0; j < selection.columnCount() && index_x + j < (int32_t)GetWidth(); j++) {
+                int32_t tileset_index = (selection.topRow() + i) * 16 + (selection.leftColumn() + j);
 
                 // perform randomization for autotiles
                 _AutotileRandomize(multiplier, tileset_index);
@@ -1230,7 +1230,7 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
     } // multiple tiles are selected
     else {
         // put selected tile from tileset into tile array at correct position
-        int32 tileset_index = table->currentRow() * 16 + table->currentColumn();
+        int32_t tileset_index = table->currentRow() * 16 + table->currentColumn();
 
         // perform randomization for autotiles
         _AutotileRandomize(multiplier, tileset_index);
@@ -1246,7 +1246,7 @@ void Grid::_PaintTile(int32 index_x, int32 index_y)
 
 
 
-void Grid::_DeleteTile(int32 index_x, int32 index_y)
+void Grid::_DeleteTile(int32_t index_x, int32_t index_y)
 {
     // Record information for undo/redo action.
     _tile_indeces.push_back(QPoint(index_x, index_y));
@@ -1259,10 +1259,10 @@ void Grid::_DeleteTile(int32 index_x, int32 index_y)
 
 
 
-void Grid::_AutotileRandomize(int32 &tileset_num, int32 &tile_index)
+void Grid::_AutotileRandomize(int32_t &tileset_num, int32_t &tile_index)
 {
     // Can't do randomization when an invalid tileset is called.
-    if (tileset_num >= static_cast<int32>(tilesets.size())) {
+    if (tileset_num >= static_cast<int32_t>(tilesets.size())) {
         std::cout << __LINE__ << "Invalid tileset index: " << tileset_num
                   << " / " << tilesets.size() << std::endl;
         return;
@@ -1281,7 +1281,7 @@ void Grid::_AutotileRandomize(int32 &tileset_num, int32 &tile_index)
                                 QString("ERROR: could not open data/tilesets/autotiling.lua for reading!"));
 
     read_data.OpenTable(it->second);
-    int32 random_index = vt_utils::RandomBoundedInteger(1, static_cast<int32>(read_data.GetTableSize()));
+    int32_t random_index = vt_utils::RandomBoundedInteger(1, static_cast<int32_t>(read_data.GetTableSize()));
     read_data.OpenTable(random_index);
     std::string tileset_name = read_data.ReadString(1);
     tile_index = read_data.ReadInt(2);
@@ -1297,18 +1297,18 @@ void Grid::_AutotileRandomize(int32 &tileset_num, int32 &tile_index)
 
 
 
-void Grid::_AutotileTransitions(int32 &/*tileset_num*/, int32 &/*tile_index*/, const std::string &/*tile_group*/)
+void Grid::_AutotileTransitions(int32_t &/*tileset_num*/, int32_t &/*tile_index*/, const std::string &/*tile_group*/)
 {
     /*
     // These 2 vectors have a one-to-one correspondence. They should always
     // contain 8 entries.
-    vector<int32>  existing_tiles;   // This vector will contain all the tiles around the current painted tile that need to be examined.
+    vector<int32_t>  existing_tiles;   // This vector will contain all the tiles around the current painted tile that need to be examined.
     vector<string> existing_groups;  // This vector will contain the autotileable groups of the existing tiles.
 
     // These booleans are used to know whether the current tile being painted is on the edge of the map.
     // This will affect the transition/border algorithm.
     //bool top_edge    = (_tile_index - _map->GetWidth()) < 0;
-    bool top_edge    =  _tile_index < (int32)_map->GetWidth();
+    bool top_edge    =  _tile_index < (int32_t)_map->GetWidth();
     bool bottom_edge = (_tile_index + _map->GetWidth()) >= (_map->GetWidth() * _map->GetHeight());
     bool left_edge   = ( _tile_index    % _map->GetWidth()) == 0;
     bool right_edge  = ((_tile_index+1) % _map->GetWidth()) == 0;
@@ -1367,8 +1367,8 @@ void Grid::_AutotileTransitions(int32 &/*tileset_num*/, int32 &/*tile_index*/, c
     // Now figure out what groups the existing tiles belong to.
     for (unsigned int i = 0; i < existing_tiles.size(); i++)
     {
-        int32 multiplier    = existing_tiles[i] / 256;
-        int32 tileset_index = existing_tiles[i] % 256;
+        int32_t multiplier    = existing_tiles[i] / 256;
+        int32_t tileset_index = existing_tiles[i] % 256;
         map<int, string>::iterator it = _map->tilesets[multiplier]->
             autotileability.find(tileset_index);
 

@@ -69,8 +69,8 @@ void TilesetDisplay::UpdateScene()
     addPixmap(tileset->tiles[0]);
 
     // Draw transparent red over the unwalkable tile quadrants
-    for(uint32 i = 0; i < 16; ++i) {
-        for(uint32 j = 0; j < 16; ++j) {
+    for(uint32_t i = 0; i < 16; ++i) {
+        for(uint32_t j = 0; j < 16; ++j) {
 
             if(tileset->walkability[i * 16 + j][0] != 0) {
                 addPixmap(_red_square)->setPos(j * 32, i * 32);
@@ -98,8 +98,8 @@ void TilesetDisplay::UpdateScene()
 
 void TilesetDisplay::_DrawGrid()
 {
-    for(uint32 y = 0; y < 512; y+=16) {
-        for(uint32 x = 0; x < 512; x+=16) {
+    for(uint32_t y = 0; y < 512; y+=16) {
+        for(uint32_t x = 0; x < 512; x+=16) {
             addLine(x, 0, x, 512, QPen(Qt::DashLine));
             addLine(0, y, 512, y, QPen(Qt::DashLine));
         }
@@ -160,12 +160,12 @@ void TilesetDisplay::_UpdateTiles(QGraphicsSceneMouseEvent *evt)
 
     QPointF pos = evt->scenePos();
     // Determine which tile the user clicked
-    int32 tile_x = pos.x() / 32;
-    int32 x_offset = ((int32)pos.x()) % 32;
-    int32 tile_y = pos.y() / 32;
-    int32 y_offset = ((int32)pos.y()) % 32;
+    int32_t tile_x = pos.x() / 32;
+    int32_t x_offset = ((int32_t)pos.x()) % 32;
+    int32_t tile_y = pos.y() / 32;
+    int32_t y_offset = ((int32_t)pos.y()) % 32;
 
-    int32 tile_index = 0;
+    int32_t tile_index = 0;
 
     // Now determine which quadrant of that tile was clicked, and change it's walkability status
     if((x_offset < 16) && (y_offset < 16))  // Upper left quadrant (index 0)
@@ -189,10 +189,10 @@ bool TilesetDisplay::_GetTileCollisionValue(QGraphicsSceneMouseEvent *evt)
 
     QPointF pos = evt->scenePos();
     // Determine which tile the user clicked
-    int32 tile_x = pos.x() / 32;
-    int32 x_offset = ((int32)pos.x()) % 32;
-    int32 tile_y = pos.y() / 32;
-    int32 y_offset = ((int32)pos.y()) % 32;
+    int32_t tile_x = pos.x() / 32;
+    int32_t x_offset = ((int32_t)pos.x()) % 32;
+    int32_t tile_y = pos.y() / 32;
+    int32_t y_offset = ((int32_t)pos.y()) % 32;
 
     if((x_offset < 16) && (y_offset < 16)) // Upper left quadrant (index 0)
         return tileset->walkability[tile_y * 16 + tile_x][0];

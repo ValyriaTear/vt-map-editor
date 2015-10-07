@@ -68,7 +68,7 @@ MapPropertiesDialog::MapPropertiesDialog
     // skip over the present and parent working directories ("." and "..")
     // Also add the data/tilesets path.
     QDir tileset_dir(root_folder + "/data/tilesets", "*.lua");
-    for(uint32 i = 2; i < tileset_dir.count(); ++i) {
+    for(uint32_t i = 2; i < tileset_dir.count(); ++i) {
         // Exclude the autotiling.lua file as it's no tileset.
         // TODO: Move files and handle this better...
         if (tileset_dir[i] == QString("autotiling.lua"))

@@ -80,8 +80,8 @@ private:
 
     //! Tells the last edited square coords, used when using mouse drag to paint
     //! areas quickly.
-    int32 _last_x;
-    int32 _last_y;
+    int32_t _last_x;
+    int32_t _last_y;
 
     //! Tells whether the user was adding or removing a collision square
     //! when starting to drag the mouse.

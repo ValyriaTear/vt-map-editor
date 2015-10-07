@@ -69,11 +69,11 @@ public:
     //! \name Class member accessor functions
     //@{
     //! \brief Returns the map height from the height spinbox.
-    uint32 GetHeight() const {
+    uint32_t GetHeight() const {
         return _height_sbox->value();
     }
     //! \brief Returns the map width from the width spinbox.
-    uint32 GetWidth()  const {
+    uint32_t GetWidth()  const {
         return  _width_sbox->value();
     }
 

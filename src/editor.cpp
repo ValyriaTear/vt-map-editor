@@ -413,7 +413,7 @@ void Editor::_FileNew()
 
     // Adds the corresponding layers in the grid class memory
     std::vector<Layer> layers = _grid->GetLayers();
-    for (uint32 i = 0; i < 4; ++i) {
+    for (uint32_t i = 0; i < 4; ++i) {
         Layer layer;
         layer.layer_type = i < 3 ? GROUND_LAYER : SKY_LAYER;
         QString name = tr("Background %1").arg(i + 1);
@@ -669,23 +669,23 @@ void Editor::_TileLayerFill()
     QTableWidget *table = static_cast<QTableWidget *>(_ed_tabs->currentWidget());
 
     // put selected tile from tileset into tile array at correct position
-    int32 tileset_index = table->currentRow() * 16 + table->currentColumn();
-    int32 multiplier = _grid->tileset_def_names.indexOf(_ed_tabs->tabText(_ed_tabs->currentIndex()));
+    int32_t tileset_index = table->currentRow() * 16 + table->currentColumn();
+    int32_t multiplier = _grid->tileset_def_names.indexOf(_ed_tabs->tabText(_ed_tabs->currentIndex()));
 
     if(multiplier == -1) {
         _grid->tileset_def_names.append(_ed_tabs->tabText(_ed_tabs->currentIndex()));
         multiplier = _grid->tileset_def_names.indexOf(_ed_tabs->tabText(_ed_tabs->currentIndex()));
     } // calculate index of current tileset
 
-    std::vector<std::vector<int32> >& current_layer = _grid->GetCurrentLayer();
+    std::vector<std::vector<int32_t> >& current_layer = _grid->GetCurrentLayer();
 
     // Record the information for undo/redo operations.
-    std::vector<int32> previous;
-    std::vector<int32> modified;
+    std::vector<int32_t> previous;
+    std::vector<int32_t> modified;
     std::vector<QPoint> indeces;;
 
-    for(uint32 y = 0; y < current_layer.size(); ++y) {
-        for(uint32 x = 0; x < current_layer[y].size(); ++x) {
+    for(uint32_t y = 0; y < current_layer.size(); ++y) {
+        for(uint32_t x = 0; x < current_layer[y].size(); ++x) {
             // Stores the indeces
             indeces.push_back(QPoint(x, y));
             previous.push_back(current_layer[y][x]);
@@ -713,14 +713,14 @@ void Editor::_TileLayerFill()
 
 void Editor::_TileLayerClear()
 {
-    /*std::vector<std::vector<int32> >::iterator it;    // used to iterate over an entire layer
-    std::vector<std::vector<int32> >& current_layer = _ed_scrollarea->GetCurrentLayer();
+    /*std::vector<std::vector<int32_t> >::iterator it;    // used to iterate over an entire layer
+    std::vector<std::vector<int32_t> >& current_layer = _ed_scrollarea->GetCurrentLayer();
 
     // Record the information for undo/redo operations.
-    std::vector<std::vector<int32> > previous = current_layer;
-    //std::vector<std::vector<int32> > modified(current_layer.size(), -1);
-    std::vector<std::vector<int32> > indeces(current_layer.size());
-    	for (int32 i = 0; i < static_cast<int32>(current_layer.size()); i++)
+    std::vector<std::vector<int32_t> > previous = current_layer;
+    //std::vector<std::vector<int32_t> > modified(current_layer.size(), -1);
+    std::vector<std::vector<int32_t> > indeces(current_layer.size());
+    	for (int32_t i = 0; i < static_cast<int32_t>(current_layer.size()); i++)
     		indeces[i] = i;
 
     	// Clear the layer.
@@ -849,7 +849,7 @@ void Editor::_MapDeleteLayer()
     if(!_CanDeleteLayer(_ed_layer_view->currentItem()))
         return;
 
-    uint32 layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
+    uint32_t layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
     std::vector<Layer>& layers = _grid->GetLayers();
     if(layer_id >= layers.size())
         return;
@@ -884,7 +884,7 @@ void Editor::_MapMoveLayerUp()
     if(!_grid || !_CanLayerMoveUp(_ed_layer_view->currentItem()))
         return;
 
-    uint32 layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
+    uint32_t layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
     if(layer_id == 0)
         return;
 
@@ -893,7 +893,7 @@ void Editor::_MapMoveLayerUp()
         return;
 
     // insert the layer before the previous one in the new vector
-    uint32 old_id = 0;
+    uint32_t old_id = 0;
     std::vector<Layer> new_layers;
     std::vector<Layer>::iterator it = layers.begin();
     for(; it != layers.end(); ++it) {
@@ -929,13 +929,13 @@ void Editor::_MapMoveLayerDown()
     if(!_grid || !_CanLayerMoveDown(_ed_layer_view->currentItem()))
         return;
 
-    uint32 layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
+    uint32_t layer_id = _ed_layer_view->currentItem()->text(0).toUInt();
     std::vector<Layer>& layers = _grid->GetLayers();
     if(layers.size() < 2 || layer_id >= layers.size() - 1)
         return;
 
     // insert the layer after the next one in the new vector
-    uint32 old_id = 0;
+    uint32_t old_id = 0;
     std::vector<Layer> new_layers;
     std::vector<Layer>::iterator it = layers.begin();
     for(; it != layers.end(); ++it) {
@@ -988,15 +988,15 @@ void Editor::_MapProperties()
         // Add in the extra columns one by one.
         for (int col = extra_columns; col > 0; col--)
         {
-            vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-            vector<int32>::iterator it = lower_layer.begin() + map_width;
+            vector<int32_t>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>::iterator it = lower_layer.begin() + map_width;
             for (int row = 0; row < map_height; row++)
             {
                 lower_layer.insert(it, -1);
                 it += map_width + 1;
             } // iterate through the rows of the lower layer
 
-            vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
             it = middle_layer.begin() + map_width;
             for (int row = 0; row < map_height; row++)
             {
@@ -1004,7 +1004,7 @@ void Editor::_MapProperties()
                 it += map_width + 1;
             } // iterate through the rows of the middle layer
 
-            vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
             it = upper_layer.begin() + map_width;
             for (int row = 0; row < map_height; row++)
             {
@@ -1027,15 +1027,15 @@ void Editor::_MapProperties()
         // Delete all the extra columns one by one.
         for (int col = extra_columns; col > 0; col--)
         {
-            vector<int32>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-            vector<int32>::iterator it = lower_layer.begin() + map_width - 1;
+            vector<int32_t>& lower_layer = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>::iterator it = lower_layer.begin() + map_width - 1;
             for (int row = 0; row < map_height; row++)
             {
                 lower_layer.erase(it);
                 it += map_width - 1;
             } // iterate through the rows of the lower layer
 
-            vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
             it = middle_layer.begin() + map_width - 1;
             for (int row = 0; row < map_height; row++)
             {
@@ -1043,7 +1043,7 @@ void Editor::_MapProperties()
                 it += map_width - 1;
             } // iterate through the rows of the middle layer
 
-            vector<int32>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+            vector<int32_t>& upper_layer = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
             it = upper_layer.begin() + map_width - 1;
             for (int row = 0; row < map_height; row++)
             {
@@ -1063,9 +1063,9 @@ void Editor::_MapProperties()
         int map_width = _ed_scrollarea->_map->GetWidth();
         int extra_rows = props->GetHeight() - _ed_scrollarea->_map->GetHeight();
 
-        vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
         lower_layer.insert( lower_layer.end(),  extra_rows * map_width, -1);
         middle_layer.insert(middle_layer.end(), extra_rows * map_width, -1);
         upper_layer.insert( upper_layer.end(),  extra_rows * map_width, -1);
@@ -1077,9 +1077,9 @@ void Editor::_MapProperties()
         int map_width  = _ed_scrollarea->_map->GetWidth();
         int extra_rows = _ed_scrollarea->_map->GetHeight() - props->GetHeight();
 
-        vector<int32>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
-        vector<int32>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
-        vector<int32>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& lower_layer  = _ed_scrollarea->_map->GetLayer(GROUND_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& middle_layer = _ed_scrollarea->_map->GetLayer(FRINGE_LAYER, _ed_scrollarea->_map->GetContext());
+        vector<int32_t>& upper_layer  = _ed_scrollarea->_map->GetLayer(SKY_LAYER, _ed_scrollarea->_map->GetContext());
         lower_layer.erase( lower_layer.end()  - extra_rows * map_width, lower_layer.end());
         middle_layer.erase(middle_layer.end() - extra_rows * map_width, middle_layer.end());
         upper_layer.erase( upper_layer.end()  - extra_rows * map_width, upper_layer.end());
@@ -1154,7 +1154,7 @@ void Editor::_UpdateLayersView()
 {
     _ed_layer_view->clear();
     std::vector<QTreeWidgetItem *> layer_names = _grid->getLayerItems();
-    for(uint32 i = 0; i < layer_names.size(); ++i) {
+    for(uint32_t i = 0; i < layer_names.size(); ++i) {
         _ed_layer_view->addTopLevelItem(layer_names[i]);
     }
     _ed_layer_view->adjustSize();
@@ -1227,10 +1227,10 @@ bool Editor::_CanDeleteLayer(QTreeWidgetItem *item) const
         return false;
 
     // Count the available ground layers
-    uint32 ground_layers_count = 0;
+    uint32_t ground_layers_count = 0;
     std::vector<Layer>& layers = _grid->GetLayers();
 
-    for(uint32 i = 0; i < layers.size(); ++i) {
+    for(uint32_t i = 0; i < layers.size(); ++i) {
         if(layers[i].layer_type == GROUND_LAYER)
             ++ground_layers_count;
     }
@@ -1241,7 +1241,7 @@ bool Editor::_CanDeleteLayer(QTreeWidgetItem *item) const
     return false;
 }
 
-void Editor::_SetSelectedLayer(uint32 layer_id)
+void Editor::_SetSelectedLayer(uint32_t layer_id)
 {
     if(!_ed_layer_view)
         return;
@@ -1259,7 +1259,7 @@ void Editor::_UpdateSelectedLayer(QTreeWidgetItem *item)
         return;
 
     // Turns back the layer's id into an uint.
-    uint32 layer_id = item->text(0).toUInt();
+    uint32_t layer_id = item->text(0).toUInt();
 
     if(_grid)
         _grid->_layer_id = layer_id;
@@ -1523,8 +1523,8 @@ bool Editor::_EraseOK()
 // LayerCommand class -- public functions
 ///////////////////////////////////////////////////////////////////////////////
 
-LayerCommand::LayerCommand(std::vector<QPoint> indeces, std::vector<int32> previous, std::vector<int32> modified,
-                           uint32 layer_id, Editor *editor, const QString &text, QUndoCommand *parent) :
+LayerCommand::LayerCommand(std::vector<QPoint> indeces, std::vector<int32_t> previous, std::vector<int32_t> modified,
+                           uint32_t layer_id, Editor *editor, const QString &text, QUndoCommand *parent) :
     QUndoCommand(text, parent),
     _tile_indeces(indeces),
     _previous_tiles(previous),
@@ -1536,7 +1536,7 @@ LayerCommand::LayerCommand(std::vector<QPoint> indeces, std::vector<int32> previ
 void LayerCommand::undo()
 {
 
-    for(int32 i = 0; i < static_cast<int32>(_tile_indeces.size()); ++i) {
+    for(int32_t i = 0; i < static_cast<int32_t>(_tile_indeces.size()); ++i) {
         _editor->_grid->GetLayers()[_edited_layer_id].tiles[_tile_indeces[i].y()][_tile_indeces[i].x()] = _previous_tiles[i];
     }
 
@@ -1548,7 +1548,7 @@ void LayerCommand::undo()
 void LayerCommand::redo()
 {
 
-    for(int32 i = 0; i < static_cast<int32>(_tile_indeces.size()); i++) {
+    for(int32_t i = 0; i < static_cast<int32_t>(_tile_indeces.size()); i++) {
         _editor->_grid->GetLayers()[_edited_layer_id].tiles[_tile_indeces[i].y()][_tile_indeces[i].x()] = _modified_tiles[i];
     }
     _editor->_grid->update();
