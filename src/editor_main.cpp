@@ -15,7 +15,7 @@
 *** \brief   Source file for editor's main() function.
 *** ***************************************************************************/
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "editor.h"
 
 using namespace vt_script;

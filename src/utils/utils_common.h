@@ -9,110 +9,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /** ***************************************************************************(
-*** \file    utils_pch.h
+*** \file    utils_common.h
 *** \author  Tyler Olsen, roots@allacrost.org
 *** \author  Yohann Ferreira, yohann ferreira orange fr
-*** \brief   Precompiled Header file for the project.
+*** \brief   Common Header file for the project.
 ***
 *** This code includes the headers and common types used all around the code.
 ***
 **/
 
-#ifndef __UTILS_PCH_HEADER__
-#define __UTILS_PCH_HEADER__
+#ifndef __UTILS_COMMON_HEADER__
+#define __UTILS_COMMON_HEADER__
 
-//
-// Include Common Headers
-//
-
-#ifdef _WIN32
-#   include <windows.h>
-#   include <direct.h>
-#   include <shlobj.h>
-#   include <stdlib.h>
-#   ifndef PATH_MAX
-#       define PATH_MAX _MAX_PATH   // redefine _MAX_PATH to be compatible with Darwin's PATH_MAX
-#   endif
-#else
-#   include <dirent.h>
-#   include <pwd.h>
-#   include <sys/types.h>
-#   include <unistd.h>
-#endif
-
-#ifdef __APPLE__
-#   include <OpenGL/gl.h>
-#   include <OpenGL/glu.h>
-#   include <unistd.h>
-#   undef check
-#else
-#   include <GL/glew.h>
-#   include <GL/gl.h>
-#   include <GL/glu.h>
-#endif
-
-#ifdef __linux__
-#   include <limits.h>
-#endif
-
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstdarg>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <deque>
-#include <fstream>
-#include <iconv.h>
 #include <iostream>
-
-#include <list>
-#include <map>
-#include <math.h>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <stdarg.h>
-
-#ifdef HAVE_STDINT_H
-#   include <stdint.h> // Using the C header, because the C++ header, <cstdint> is only available in ISO C++0x
-#endif
-
-#include <stdexcept>
-#include <string>
-#include <sys/stat.h>
-#include <time.h>
-#include <vector>
-
-extern "C" {
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
-
-#include <luabind/luabind.hpp>
-#include <luabind/adopt_policy.hpp>
-#include <luabind/object.hpp>
-
-#if LUA_VERSION_NUM < 502
-# define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
-#endif
-
-// The Windows API defines GetMessage and CreateSemaphore.
-// Undefine it here to prevent conflicts within the code base.
-// Case-insensitive string compare is called stricmp in Windows and strcasecmp everywhere else.
-#ifdef _WIN32
-#   undef GetMessage
-#   undef CreateSemaphore
-#   ifndef strcasecmp
-#       define strcasecmp stricmp
-#   endif
-#endif
-
-//
-// Common Defines and Typedefs
-//
 
 /** \name Print Message Helper Macros
 *** These macros assist programmers with writing debug, warning, or error messages that are to be printed to
@@ -138,13 +47,4 @@ extern "C" {
 #define IF_PRINT_WARNING(var) if (var) std::cout << "WARNING:" << __FILE__ << ":" << __FUNCTION__ << ":" << __LINE__ << ": " << std::endl
 //@}
 
-//! Contains utility code used across the entire source code
-namespace vt_utils
-{
-
-//! Determines whether the code in the vt_utils namespace should print debug statements or not.
-extern bool UTILS_DEBUG;
-
-} // vt_utils
-
-#endif // __UTILS_PCH_HEADER__
+#endif // __UTILS_COMMON_HEADER__

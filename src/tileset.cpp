@@ -16,7 +16,7 @@
 ***          "list" of tiles to select from for painting on the map.
 *** **************************************************************************/
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "tileset.h"
 
 #include "script/script_read.h"

@@ -194,8 +194,7 @@ script/script_read.h
 script/script_read.cpp
 script/script_write.h
 script/script_write.cpp
-utils/utils_pch.h
-utils/utils_pch.cpp
+utils/utils_common.h
 utils/singleton.h
 utils/utils_random.h
 utils/utils_random.cpp

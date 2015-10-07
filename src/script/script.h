@@ -26,8 +26,24 @@
 #ifndef __SCRIPT_HEADER__
 #define __SCRIPT_HEADER__
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "utils/singleton.h"
+
+extern "C" {
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+}
+
+#include <luabind/luabind.hpp>
+#include <luabind/adopt_policy.hpp>
+#include <luabind/object.hpp>
+
+#include <sstream>
+
+#if LUA_VERSION_NUM < 502
+# define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
+#endif
 
 //! \brief All calls to the scripting engine are wrapped in this namespace.
 namespace vt_script

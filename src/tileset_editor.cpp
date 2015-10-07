@@ -15,7 +15,7 @@
 *** \brief   Source file for editor's tileset editor dialog
 *******************************************************************************/
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "tileset_editor.h"
 
 #include <QGraphicsView>

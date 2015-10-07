@@ -15,8 +15,26 @@
 *** \brief   Source file for the utility code.
 *** ***************************************************************************/
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "utils_files.h"
+
+#ifdef _WIN32
+#   include <windows.h>
+#   include <direct.h>
+#   include <shlobj.h>
+#   include <stdlib.h>
+#   ifndef PATH_MAX
+#       define PATH_MAX _MAX_PATH   // redefine _MAX_PATH to be compatible with Darwin's PATH_MAX
+#   endif
+#else
+#   include <dirent.h>
+#   include <pwd.h>
+#   include <sys/types.h>
+#   include <unistd.h>
+#endif
+
+#include <sys/stat.h>
+#include <fstream>
 
 namespace vt_utils
 {

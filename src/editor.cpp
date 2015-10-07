@@ -15,7 +15,7 @@
 *** \brief   Source file for editor's main window and user interface.
 *** **************************************************************************/
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 #include "editor.h"
 
 #include <QTableWidgetItem>

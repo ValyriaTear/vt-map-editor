@@ -18,7 +18,7 @@
 #ifndef __UTILS_NUMERIC_HEADER__
 #define __UTILS_NUMERIC_HEADER__
 
-#include "utils/utils_pch.h"
+#include "utils/utils_common.h"
 
 //! Contains utility code used across the entire source code
 namespace vt_utils
