@@ -1098,20 +1098,17 @@ void Editor::_MapProperties()
 
     QTreeWidget *tilesets = props->GetTilesetTree();
 
-    // Put the names of the tabs into a nice list that can be easily searched
-    // with one command instead of a loop.
-    QStringList tab_names;
-    for(int i = 0; i < _ed_tabs->count(); i++)
-        tab_names << _ed_tabs->tabText(i);
+    // Copy the tileset names localle
+    QStringList tab_names = _grid->tileset_def_names;
 
     // Go through the list of tilesets, adding selected tilesets and removing
     // any unwanted tilesets.
     int num_items = tilesets->topLevelItemCount();
-    for(int i = 0; i < num_items; i++) {
+    for(int i = 0; i < num_items; ++i) {
         // Tileset must be checked in order to add it
         if(tilesets->topLevelItem(i)->checkState(0) == Qt::Checked) {
             // Only add a tileset if it isn't already loaded
-            if(tab_names.contains(tilesets->topLevelItem(i)->text(0)) == true)
+            if(tab_names.contains(tilesets->topLevelItem(i)->text(0)))
                 continue;
 
             TilesetTable *a_tileset = new TilesetTable();

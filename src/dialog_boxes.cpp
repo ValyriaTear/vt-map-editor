@@ -86,8 +86,8 @@ MapPropertiesDialog::MapPropertiesDialog
 
             // Iterate through the names of the tabs to see which ones in the
             // list are already present and set their checkbox appropriately.
-            for(int j = 0; j < editor->_ed_tabs->count(); j++)
-                if(tilesets.back()->text(0) == editor->_ed_tabs->tabText(j)) {
+            for(int j = 0; j < editor->_grid->tileset_def_names.size(); ++j)
+                if(tilesets.back()->text(0) == editor->_grid->tileset_def_names.at(j)) {
                     tilesets.back()->setCheckState(0, Qt::Checked);
                     _ok_pbut->setEnabled(true);
                     break;
