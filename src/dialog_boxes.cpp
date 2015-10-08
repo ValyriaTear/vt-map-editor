@@ -21,7 +21,6 @@
 namespace vt_editor
 {
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // MapPropertiesDialog class -- all functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,6 +30,7 @@ MapPropertiesDialog::MapPropertiesDialog
     QDialog(parent)
 {
     setWindowTitle("Map Properties...");
+    setMinimumSize(450, 400);
 
     // Set up the height spinbox
     _height_label = new QLabel("Height (in tiles):", this);
