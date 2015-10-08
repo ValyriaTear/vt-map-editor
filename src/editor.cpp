@@ -1098,17 +1098,15 @@ void Editor::_MapProperties()
 
     QTreeWidget *tilesets = props->GetTilesetTree();
 
-    // Copy the tileset names localle
-    QStringList tab_names = _grid->tileset_def_names;
-
     // Go through the list of tilesets, adding selected tilesets and removing
     // any unwanted tilesets.
     int num_items = tilesets->topLevelItemCount();
     for(int i = 0; i < num_items; ++i) {
+
         // Tileset must be checked in order to add it
         if(tilesets->topLevelItem(i)->checkState(0) == Qt::Checked) {
             // Only add a tileset if it isn't already loaded
-            if(tab_names.contains(tilesets->topLevelItem(i)->text(0)))
+            if(_grid->tileset_def_names.contains(tilesets->topLevelItem(i)->text(0)))
                 continue;
 
             TilesetTable *a_tileset = new TilesetTable();
@@ -1122,25 +1120,30 @@ void Editor::_MapProperties()
             }
             _ed_tabs->addTab(a_tileset->table, tilesets->topLevelItem(i)->text(0));
             _grid->tilesets.push_back(a_tileset);
+            _grid->tileset_def_names.push_back(tilesets->topLevelItem(i)->text(0));
         }
-        else if(tilesets->topLevelItem(i)->checkState(0) == Qt::Unchecked &&
-                tab_names.contains(tilesets->topLevelItem(i)->text(0)))
-            _ed_tabs->removeTab(tab_names.indexOf(tilesets->topLevelItem(i)->text(0)));
-        // FIXME:
-        // Where to add and remove tileset name from the tilesets list
-        // in the _map? Do it here or when actually painting and deleting
-        // tiles? Here the assumption is made that if the user is adding a
-        // tileset, then s/he expects to use tiles from that tileset and we
-        // can safely add the tileset name to the _map. Otherwise we would
-        // have to constantly check every time a paint operation occurs
-        // whether or not the tileset name of the selected tile was present
-        // in the tileset name list in _map. That's cumbersome.
-        //
-        // When removing a tileset however, there might still be tiles in
-        // the map from that tileset, and the user is only removing the
-        // tileset from the view in the bottom of the map to unclutter
-        // things. In this case we wouldn't want to remove the tileset name
-        // from the list in _map.
+        else if(tilesets->topLevelItem(i)->checkState(0) == Qt::Unchecked) {
+            if (!_grid->tileset_def_names.contains(tilesets->topLevelItem(i)->text(0)))
+                continue;
+
+            _ed_tabs->removeTab(_grid->tileset_def_names.indexOf(tilesets->topLevelItem(i)->text(0)));
+            _grid->tileset_def_names.removeAll(tilesets->topLevelItem(i)->text(0));
+            // FIXME:
+            // Where to add and remove tileset name from the tilesets list
+            // in the _map? Do it here or when actually painting and deleting
+            // tiles? Here the assumption is made that if the user is adding a
+            // tileset, then s/he expects to use tiles from that tileset and we
+            // can safely add the tileset name to the _map. Otherwise we would
+            // have to constantly check every time a paint operation occurs
+            // whether or not the tileset name of the selected tile was present
+            // in the tileset name list in _map. That's cumbersome.
+            //
+            // When removing a tileset however, there might still be tiles in
+            // the map from that tileset, and the user is only removing the
+            // tileset from the view in the bottom of the map to unclutter
+            // things. In this case we wouldn't want to remove the tileset name
+            // from the list in _map.
+        }
     }
 
     delete props;
