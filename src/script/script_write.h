@@ -20,7 +20,6 @@
 #define __SCRIPT_WRITE_HEADER__
 
 #include "script.h"
-
 #include "utils/utils_strings.h"
 
 #include <fstream>
@@ -261,7 +260,6 @@ template <class T> void WriteScriptDescriptor::_WriteData(const std::string &key
     }
 }
 
-
 template <class T> void WriteScriptDescriptor::_WriteData(const int32_t key, T value)
 {
     if(_open_tables.empty()) {
@@ -273,8 +271,6 @@ template <class T> void WriteScriptDescriptor::_WriteData(const int32_t key, T v
     _WriteTablePath();
     _outfile << '[' << key << ']' << " = " << value << std::endl;
 }
-
-
 
 template <class T> void WriteScriptDescriptor::_WriteDataVector(const std::string &key, std::vector<T> &vect)
 {
@@ -300,8 +296,6 @@ template <class T> void WriteScriptDescriptor::_WriteDataVector(const std::strin
     }
     _outfile << " }" << std::endl;
 }
-
-
 
 template <class T> void WriteScriptDescriptor::_WriteDataVector(const int32_t key, std::vector<T>& vect)
 {

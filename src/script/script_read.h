@@ -457,7 +457,7 @@ public:
     /** \brief  Generic function running a lua script using an object pointer with the usual checks.
     *** \note that this function can only call fonctions without parameters atm.
     **/
-    static bool RunScriptObject(const ScriptObject &object);
+    static bool RunScriptObject(const luabind::object &object);
 
     /** \brief Prints out the contents of the Lua stack mechanism to standard output
     *** The elements are printed from stack top to stack bottom.
@@ -475,6 +475,8 @@ public:
 
 protected:
     //! \brief The Lua stack, which handles all data sharing between C++ and Lua.
+    //! \note In that case, it is representing a coroutine state because it was opened
+    //! through a lua new "thread".
     lua_State *_lstack;
 
     /** \name Data Existence Check Functions
@@ -573,9 +575,7 @@ template <class T> T ReadScriptDescriptor::_ReadData(const std::string &key, T d
         }
     }
     return default_value;
-} // template <class T> T ReadScriptDescriptor::_ReadData(const char *key, T default_value)
-
-
+}
 
 template <class T> T ReadScriptDescriptor::_ReadData(int32_t key, T default_value)
 {
@@ -600,9 +600,7 @@ template <class T> T ReadScriptDescriptor::_ReadData(int32_t key, T default_valu
     }
 
     return default_value;
-} // template <class T> T ReadScriptDescriptor::_ReadData(int32_t key, T default_value)
-
-
+}
 
 template <class T> void ReadScriptDescriptor::_ReadDataVector(const std::string &key, std::vector<T>& vect)
 {
@@ -613,9 +611,7 @@ template <class T> void ReadScriptDescriptor::_ReadDataVector(const std::string 
     OpenTable(key);
     _ReadDataVectorHelper(vect);
     CloseTable();
-} // template <class T> void ReadScriptDescriptor::_ReadDataVector(std::string key, std::vector<T> &vect)
-
-
+}
 
 template <class T> void ReadScriptDescriptor::_ReadDataVector(int32_t key, std::vector<T>& vect)
 {
@@ -632,9 +628,7 @@ template <class T> void ReadScriptDescriptor::_ReadDataVector(int32_t key, std::
     OpenTable(key);
     _ReadDataVectorHelper(vect);
     CloseTable();
-} // template <class T> void ReadScriptDescriptor::_ReadDataVector(int32_t key, std::vector<T> &vect)
-
-
+}
 
 template <class T> void ReadScriptDescriptor::_ReadDataVectorHelper(std::vector<T>& vect)
 {
@@ -653,9 +647,7 @@ template <class T> void ReadScriptDescriptor::_ReadDataVectorHelper(std::vector<
             IF_PRINT_WARNING(SCRIPT_DEBUG) << "failed due to a type cast failure when reading the table" << std::endl;
         }
     }
-} // template <class T> void ReadScriptDescriptor::_ReadDataVectorHelper(std::vector<T>& vect)
-
-
+}
 
 template <class T> void ReadScriptDescriptor::_ReadTableKeys(std::vector<T>& keys)
 {
@@ -682,7 +674,7 @@ template <class T> void ReadScriptDescriptor::_ReadTableKeys(std::vector<T>& key
             return;
         }
     }
-} // template <class T> void ReadScriptDescriptor::ReadTableKeys(std::vector<T>& keys) {
+}
 
 } // namespace vt_script
 
