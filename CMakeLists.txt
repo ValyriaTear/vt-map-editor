@@ -1,7 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
-CMAKE_POLICY(VERSION 2.8.9)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
-PROJECT(VT-EDITOR)
+PROJECT(VT-MAP-EDITOR)
 
 IF (NOT VERSION)
     SET(VERSION 0.1.0)
@@ -26,7 +25,7 @@ ENDIF()
 # where to look for cmake modules
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake/Modules)
 
-SET(PKG_NAME "vt-editor")
+SET(PKG_NAME "vt-map-editor")
 IF (WIN32)
     SET(PKG_DATADIR ".")
     SET(PKG_BINDIR ".")
@@ -47,18 +46,18 @@ ADD_SUBDIRECTORY(src)
 # CPack installation part
 If(UNIX)
     # Shortcut desktop file
-    INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/vt-editor.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
+    INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/vt-map-editor.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
     # data files
     INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data" DESTINATION ${PKG_DATADIR} FILES_MATCHING PATTERN "*.png")
     # icon file
     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/data/icons/program_icon.png"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps RENAME vt-editor.png)
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps RENAME vt-map-editor.png)
     # KDE/Gnome app center app data
-    INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/vt-editor.appdata.xml"
+    INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/vt-map-editor.appdata.xml"
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/appdata)
 ENDIF()
 
-SET(CPACK_PACKAGE_NAME "vt-editor")
+SET(CPACK_PACKAGE_NAME "vt-map-editor")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Valyria Tear - Map Editor")
 SET(CPACK_PACKAGE_VENDOR "Bertram")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")

@@ -74,6 +74,9 @@ MESSAGE(STATUS "Using included luabind files")
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/luabind/build_information.hpp.cmake_in" "${CMAKE_CURRENT_SOURCE_DIR}/luabind/luabind/build_information.hpp")
 MESSAGE(STATUS "Configured luabind information file...")
 
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/utils/src")
+MESSAGE(STATUS "Using vt-utils submodule files")
+
 # Enable C++11 in luabind
 SET(FLAGS "${FLAGS} -DLUABIND_USE_CXX11")
 
@@ -159,7 +162,6 @@ luabind/luabind/detail/primitives.hpp
 luabind/luabind/detail/convert_to_lua.hpp
 luabind/luabind/detail/most_derived.hpp
 luabind/luabind/detail/stack_utils.hpp
-luabind/luabind/detail/open.hpp
 luabind/luabind/detail/property.hpp
 luabind/luabind/detail/other.hpp
 luabind/luabind/detail/link_compatibility.hpp
@@ -188,22 +190,22 @@ luabind/luabind/wrapper_base.hpp
 
 # Files used by both the game and the editor
 SET(SRCS_COMMON
-script/script.h
-script/script.cpp
-script/script_read.h
-script/script_read.cpp
-script/script_write.h
-script/script_write.cpp
-utils/utils_common.h
-utils/singleton.h
-utils/utils_random.h
-utils/utils_random.cpp
-utils/utils_files.h
-utils/utils_files.cpp
-utils/utils_numeric.h
-utils/utils_numeric.cpp
-utils/utils_strings.h
-utils/utils_strings.cpp
+utils/src/script/script.h
+utils/src/script/script.cpp
+utils/src/script/script_read.h
+utils/src/script/script_read.cpp
+utils/src/script/script_write.h
+utils/src/script/script_write.cpp
+utils/src/utils/utils_common.h
+utils/src/utils/singleton.h
+utils/src/utils/utils_random.h
+utils/src/utils/utils_random.cpp
+utils/src/utils/utils_files.h
+utils/src/utils/utils_files.cpp
+utils/src/utils/utils_numeric.h
+utils/src/utils/utils_numeric.cpp
+utils/src/utils/utils_strings.h
+utils/src/utils/utils_strings.cpp
 )
 
 SET(EDITOR_QT_HEADERS
@@ -227,18 +229,18 @@ QT5_WRAP_CPP(EDITOR_QT_HEADERS_MOC ${EDITOR_QT_HEADERS})
 
 QT5_ADD_RESOURCES(EDITOR_QT_RES "${PROJECT_SOURCE_DIR}/data/data.qrc")
 
-SET (PROGRAMS vt-editor)
+SET (PROGRAMS vt-map-editor)
 
-ADD_EXECUTABLE(vt-editor
+ADD_EXECUTABLE(vt-map-editor
     ${SRCS_EDITOR}
     ${SRCS_LUABIND}
     ${EDITOR_QT_HEADERS_MOC}
     ${EDITOR_QT_RES}
     ${SRCS_COMMON}
 )
-qt5_use_modules(vt-editor Widgets OpenGL)
+qt5_use_modules(vt-map-editor Widgets OpenGL)
 
-TARGET_LINK_LIBRARIES(vt-editor
+TARGET_LINK_LIBRARIES(vt-map-editor
     ${INTERNAL_LIBRARIES}
     ${QT_LIBRARIES}
     ${QT_QTOPENGL_LIBRARY}
@@ -248,14 +250,14 @@ TARGET_LINK_LIBRARIES(vt-editor
     ${EXTRA_LIBRARIES}
 )
 
-INSTALL(TARGETS vt-editor RUNTIME DESTINATION ${PKG_BINDIR})
-SET_TARGET_PROPERTIES(vt-editor PROPERTIES COMPILE_FLAGS "${FLAGS}")
+INSTALL(TARGETS vt-map-editor RUNTIME DESTINATION ${PKG_BINDIR})
+SET_TARGET_PROPERTIES(vt-map-editor PROPERTIES COMPILE_FLAGS "${FLAGS}")
 
 IF (UNIX)
     # uninstall target
     ADD_CUSTOM_TARGET(
-        uninstall-vt-editor
-        COMMAND rm -f "${PKG_BINDIR}/vt-editor"
+        uninstall-vt-map-editor
+        COMMAND rm -f "${PKG_BINDIR}/vt-map-editor"
         VERBATIM
     )
 ENDIF()
