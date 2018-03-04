@@ -1,3 +1,6 @@
 [submodule "src/luabind"]
 	path = src/luabind
-	url = git://github.com/ValyriaTear/luabind.git
+	url = https://github.com/ValyriaTear/luabind.git
+[submodule "src/utils"]
+	path = src/utils
+	url = https://github.com/ValyriaTear/vt-utils.git
