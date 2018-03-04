@@ -39,7 +39,6 @@ You'll then be able to run the editor by typing: `src/vt-editor`
 You will need the following in order to compile and run the editor:
 
 - **lua** (5.1.x - 5.2.x - 5.3.x) - (liblua)
-- **Qt 4.8.x** (only if you wish to compile the map editor)
+- **Qt 5.8.x+**
 
-Note that the editor can't be built using C::B. Use **Qt-Creator** and the **MapEditor.pro** file for that.
-Be sure also to read the instructions within that file, as **RTTI support** must be **enabled**, and **unicode disabled** in the **compile flags**.
+Use cmake to build the map editor.
