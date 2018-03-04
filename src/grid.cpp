@@ -896,7 +896,6 @@ void Grid::mousePressEvent(QGraphicsSceneMouseEvent *evt)
     } // switch on tile editing mode
 } // void Grid::mousePressEvent(QGraphicsSceneMouseEvent *evt)
 
-
 void Grid::mouseMoveEvent(QGraphicsSceneMouseEvent *evt)
 {
     // get reference to Editor
@@ -990,8 +989,6 @@ void Grid::mouseMoveEvent(QGraphicsSceneMouseEvent *evt)
                         y * 2 / static_cast<float>(TILE_HEIGHT), 0, 'f', 1));
     editor->statusBar()->showMessage(position);
 } // void Grid::mouseMoveEvent(QGraphicsSceneMouseEvent *evt)
-
-
 
 void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
 {
@@ -1126,8 +1123,6 @@ void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
 
 } // void Grid::mouseReleaseEvent(QGraphicsSceneMouseEvent *evt)
 
-
-
 void Grid::contextMenuEvent(QGraphicsSceneContextMenuEvent *evt)
 {
     // Takes in account the current scrolling
@@ -1146,8 +1141,6 @@ void Grid::contextMenuEvent(QGraphicsSceneContextMenuEvent *evt)
     (static_cast<Editor *>(_graphics_view->topLevelWidget()))->statusBar()->clearMessage();
 }
 
-
-
 void Grid::keyPressEvent(QKeyEvent *evt)
 {
     if(evt->key() == Qt::Key_Delete) {
@@ -1164,27 +1157,20 @@ void Grid::_MapInsertRow()
     InsertRow(_tile_index_y);
 }
 
-
-
 void Grid::_MapInsertColumn()
 {
     InsertCol(_tile_index_x);
 }
-
-
 
 void Grid::_MapDeleteRow()
 {
     DeleteRow(_tile_index_y);
 }
 
-
-
 void Grid::_MapDeleteColumn()
 {
     DeleteCol(_tile_index_x);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Ex-EditorScrollView class -- private functions
@@ -1244,8 +1230,6 @@ void Grid::_PaintTile(int32_t index_x, int32_t index_y)
     } // a single tile is selected
 }
 
-
-
 void Grid::_DeleteTile(int32_t index_x, int32_t index_y)
 {
     // Record information for undo/redo action.
@@ -1256,8 +1240,6 @@ void Grid::_DeleteTile(int32_t index_x, int32_t index_y)
     // Delete the tile.
     GetCurrentLayer()[index_y][index_x] = -1;
 }
-
-
 
 void Grid::_AutotileRandomize(int32_t &tileset_num, int32_t &tile_index)
 {
@@ -1294,8 +1276,6 @@ void Grid::_AutotileRandomize(int32_t &tileset_num, int32_t &tile_index)
 
     _AutotileTransitions(tileset_num, tile_index, it->second);
 }
-
-
 
 void Grid::_AutotileTransitions(int32_t &/*tileset_num*/, int32_t &/*tile_index*/, const std::string &/*tile_group*/)
 {

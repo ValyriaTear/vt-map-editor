@@ -116,7 +116,6 @@ MapPropertiesDialog::MapPropertiesDialog
     _dia_layout->addWidget(_ok_pbut,      6, 1);
 } // MapPropertiesDialog constructor
 
-
 MapPropertiesDialog::~MapPropertiesDialog()
 {
     delete _height_label;
@@ -128,7 +127,6 @@ MapPropertiesDialog::~MapPropertiesDialog()
     delete _tileset_tree;
     delete _dia_layout;
 } // MapPropertiesDialog destructor
-
 
 // ********** Private slot **********
 
@@ -188,7 +186,6 @@ LayerDialog::LayerDialog(QWidget *parent)
     _dialog_layout->addWidget(_ok_pbut,        2, 1);
 } // LayerDialog constructor
 
-
 LayerDialog::~LayerDialog()
 {
     delete _cancel_pbut;
@@ -200,7 +197,6 @@ LayerDialog::~LayerDialog()
 
     delete _dialog_layout;
 } // LayerDialog destructor
-
 
 // ********** Private slots **********
 LayerInfo LayerDialog::_GetLayerInfo()

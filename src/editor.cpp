@@ -28,7 +28,6 @@ using namespace vt_script;
 namespace vt_editor
 {
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Editor class -- public functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +111,6 @@ Editor::~Editor()
     ScriptEngine::SingletonDestroy();
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Editor class -- protected function
 ///////////////////////////////////////////////////////////////////////////////
@@ -121,7 +119,6 @@ void Editor::closeEvent(QCloseEvent *)
 {
     _FileQuit();
 } // closeEvent(...)
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Editor class -- private slots
@@ -141,8 +138,6 @@ void Editor::_FileMenuSetup()
     } // map does not exist, can't save or close it
 }
 
-
-
 void Editor::_ViewMenuSetup()
 {
     if(_grid != nullptr) {
@@ -152,8 +147,6 @@ void Editor::_ViewMenuSetup()
         _toggle_grid_action->setEnabled(false);
     } // map does not exist, can't view it*/
 }
-
-
 
 void Editor::_TilesEnableActions()
 {
@@ -179,8 +172,6 @@ void Editor::_TilesEnableActions()
     } // map does not exist, can't paint it
 }
 
-
-
 void Editor::_TilesetMenuSetup()
 {
     // Don't edit tilesets if a map is open
@@ -189,8 +180,6 @@ void Editor::_TilesetMenuSetup()
     else
         _edit_tileset_action->setEnabled(true);
 }
-
-
 
 void Editor::_MapMenuSetup()
 {
@@ -201,7 +190,6 @@ void Editor::_MapMenuSetup()
         _map_properties_action->setEnabled(false);
     } // map does not exist, can't modify it
 }
-
 
 void Editor::_SetupMainView()
 {
@@ -444,8 +432,6 @@ void Editor::_FileNew()
     statusBar()->showMessage(tr("New map created"), 5000);
 } // void Editor::_FileNew()
 
-
-
 void Editor::_FileOpen()
 {
     if(!_EraseOK()) {
@@ -554,8 +540,6 @@ void Editor::_FileOpen()
 
 } // void Editor::_FileOpen()
 
-
-
 void Editor::_FileSaveAs()
 {
     // get the file name from the user
@@ -573,8 +557,6 @@ void Editor::_FileSaveAs()
     _FileSave();
     setWindowTitle(QString("Map Editor - ") + _grid->GetFileName());
 }
-
-
 
 void Editor::_FileSave()
 {
@@ -640,16 +622,12 @@ void Editor::_FileClose()
     setWindowTitle(tr("Map Editor"));
 }
 
-
-
 void Editor::_FileQuit()
 {
     // Checks to see if the map is unsaved.
     if(_EraseOK())
         qApp->exit(0);
 }
-
-
 
 void Editor::_ViewToggleGrid()
 {
@@ -661,7 +639,6 @@ void Editor::_ViewToggleGrid()
     _grid->SetGridOn(_grid_on);
     _grid->UpdateScene();
 }
-
 
 void Editor::_TileLayerFill()
 {
@@ -709,8 +686,6 @@ void Editor::_TileLayerFill()
     _grid->UpdateScene();
 } // void Editor::_TileLayerFill()
 
-
-
 void Editor::_TileLayerClear()
 {
     /*std::vector<std::vector<int32_t> >::iterator it;    // used to iterate over an entire layer
@@ -739,8 +714,6 @@ void Editor::_TileLayerClear()
     _grid->SetChanged(true);
     _grid->UpdateScene();
 }
-
-
 void Editor::_TileToggleSelect()
 {
     if(!_grid)
@@ -750,7 +723,6 @@ void Editor::_TileToggleSelect()
     _toggle_select_action->setChecked(_select_on);
     _grid->SetSelectOn(_select_on);
 }
-
 
 void Editor::_TileModePaint()
 {
@@ -767,7 +739,6 @@ void Editor::_TileModePaint()
     _grid->_moving = false;
 }
 
-
 void Editor::_TileModeMove()
 {
     if(!_grid)
@@ -782,7 +753,6 @@ void Editor::_TileModeMove()
     _grid->_tile_mode = MOVE_TILE;
     _grid->_moving = false;
 }
-
 
 void Editor::_TileModeDelete()
 {
@@ -799,7 +769,6 @@ void Editor::_TileModeDelete()
     _grid->_moving = false;
 }
 
-
 void Editor::_TilesetEdit()
 {
     TilesetEditor *tileset_editor = new TilesetEditor(this, _game_data_folder_path.split("data").at(0));
@@ -808,7 +777,6 @@ void Editor::_TilesetEdit()
 
     delete tileset_editor;
 }
-
 
 void Editor::_MapAddLayer()
 {
@@ -1149,7 +1117,6 @@ void Editor::_MapProperties()
     delete props;
 }
 
-
 void Editor::_UpdateLayersView()
 {
     _ed_layer_view->clear();
@@ -1165,12 +1132,10 @@ void Editor::_UpdateLayersView()
 
 }
 
-
 void Editor::_HelpHelp()
 {
     QMessageBox::about(this, tr("Help"), tr("See http://allacrost.sourceforge.net/wiki/index.php/Code_Documentation#Map_Editor_Documentation for more details"));
 }
-
 
 void Editor::_HelpAbout()
 {
@@ -1182,12 +1147,10 @@ void Editor::_HelpAbout()
                           "Maintained for Valyria Tear since 2012.</p>"));
 }
 
-
 void Editor::_HelpAboutQt()
 {
     QMessageBox::aboutQt(this, tr("Map Editor -- About Qt"));
 }
-
 
 bool Editor::_CanLayerMoveUp(QTreeWidgetItem *item) const
 {
@@ -1268,7 +1231,6 @@ void Editor::_UpdateSelectedLayer(QTreeWidgetItem *item)
     _layer_down_button->setEnabled(_CanLayerMoveDown(item));
     _delete_layer_button->setEnabled(_CanDeleteLayer(item));
 }
-
 
 void Editor::_ToggleLayerVisibility()
 {
@@ -1413,8 +1375,6 @@ void Editor::_CreateActions()
     connect(_about_qt_action, SIGNAL(triggered()), this, SLOT(_HelpAboutQt()));
 } // void Editor::_CreateActions()
 
-
-
 void Editor::_CreateMenus()
 {
     // file menu creation
@@ -1472,8 +1432,6 @@ void Editor::_CreateMenus()
     _help_menu->addAction(_about_qt_action);
 } // void Editor::_CreateMenus()
 
-
-
 void Editor::_CreateToolbars()
 {
     _tiles_toolbar = addToolBar("Tiles");
@@ -1488,8 +1446,6 @@ void Editor::_CreateToolbars()
     _tiles_toolbar->addSeparator();
     _tiles_toolbar->addAction(_toggle_select_action);
 }
-
-
 
 bool Editor::_EraseOK()
 {
@@ -1542,8 +1498,6 @@ void LayerCommand::undo()
 
     _editor->_grid->UpdateScene();
 }
-
-
 
 void LayerCommand::redo()
 {
