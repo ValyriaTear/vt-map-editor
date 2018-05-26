@@ -1,9 +1,16 @@
 #vt-editor /src
 
-FIND_PACKAGE(Lua51 REQUIRED)
+FIND_PACKAGE(Lua 5.1 REQUIRED)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(Qt5OpenGL REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
+
+# Install dev target to ease development setup
+ADD_CUSTOM_TARGET(install_debian_packages
+sudo apt install qt5-default liblua5.3-dev libgl1-mesa-dev libqt5opengl5-dev
+COMMENT "Installing Debian development dependencies ..."
+VERBATIM
+)
 
 # Set the release mode if not told otherwise
 IF(NOT CMAKE_BUILD_TYPE)
