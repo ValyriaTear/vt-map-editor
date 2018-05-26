@@ -5,12 +5,21 @@ FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(Qt5OpenGL REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 
-# Install dev target to ease development setup
-ADD_CUSTOM_TARGET(install_debian_packages
-sudo apt install qt5-default liblua5.3-dev libgl1-mesa-dev libqt5opengl5-dev
-COMMENT "Installing Debian development dependencies ..."
-VERBATIM
-)
+# Check for Linux
+IF (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Check for Debian
+    find_file (DEBIAN_VERSION NAMES debian_version PATHS /etc NO_DEFAULT_PATH)
+    IF (${DEBIAN_VERSION} STREQUAL "/etc/debian_version")
+        MESSAGE(STATUS "Detected Debian System")
+
+        # Install dev target to ease development setup
+        ADD_CUSTOM_TARGET(install_debian_packages
+        sudo apt install qt5-default liblua5.3-dev libgl1-mesa-dev libqt5opengl5-dev
+        COMMENT "Installing Debian development dependencies ..."
+        VERBATIM
+        )
+    ENDIF()
+ENDIF()
 
 # Set the release mode if not told otherwise
 IF(NOT CMAKE_BUILD_TYPE)
